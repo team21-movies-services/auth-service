@@ -35,6 +35,7 @@ flake8-commas = "2.1.0"
 pre-commit = "3.3.3"
 flake8-pytest = "1.4"
 flake8-pytest-style = "1.7.2"
+types-redis = "^4.6.0.1"
 
 
 [tool.poetry.group.test.dependencies]

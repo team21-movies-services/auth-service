@@ -50,8 +50,8 @@ class UserService(UserServiceABC):
     def __init__(self, user_repository: UserRepository) -> None:
         self.user_repository = user_repository
 
-    async def get_or_create_user_from_oauth(self, user_data: OAuthUserInfoSchema) -> UserResponse:
-        """Создание пользователя на основе данных полученных из стороннего сервиса аунтификации."""
+    async def get_or_create_user_from_oauth(self, user_data: OAuthUserInfoSchema) -> uuid.UUID:
+        """Создание пользователя на основе данных полученных из стороннего сервиса аутентификации."""
         user_db = await self.user_repository.get_by(email=user_data.email)
         if not user_db:
             # FIXME: генерируем рандомный пароль для пользователей вошедших через oauth,

@@ -31,9 +31,9 @@ class PostgresConfig(BaseSettings):
 
 # Название проекта. Используется в Swagger-документации
 class ProjectConfig(BaseSettings):
-    name: str = Field('auth_api', env='PROJECT_NAME')
-    log_level: str = Field('INFO', env='LOG_LEVEL')
-    jwt_secret_key: str = Field('asdnjklnjkl123412bjk4bjk', env='JWT_SECRET_KEY')
+    name: str = Field(default='auth_api', env='PROJECT_NAME')
+    log_level: str = Field(default='INFO', env='LOG_LEVEL')
+    jwt_secret_key: str = Field(default='asdnjklnjkl123412bjk4bjk', env='JWT_SECRET_KEY')
 
 
 class Settings(BaseSettings):

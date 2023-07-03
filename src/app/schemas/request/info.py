@@ -1,10 +1,10 @@
 from pydantic.main import BaseModel
-from pydantic.types import conint
+from app.schemas.request.common import PaginationRequestType
 
 
 class HistoryRequest(BaseModel):
-    page: conint(gt=0) = 1
-    size: conint(gt=1) = 10
+    page: PaginationRequestType.page = 1
+    size: PaginationRequestType.size = 10
 
     @property
     def offset(self):

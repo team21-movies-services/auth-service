@@ -20,7 +20,6 @@ class YandexOAuthService:
     token_endpoint = 'https://oauth.yandex.ru/token'
     token_revoke = 'https://oauth.yandex.ru/revoke_token'
     userinfo = 'https://login.yandex.ru/info'
-    userinfo_converter = OAuthUserInfoSchema.from_yandex
 
     def create_authorization_url(self, **kwargs):
         url = (
@@ -52,10 +51,12 @@ class YandexOAuthService:
             logger.error(f'Request to token: {kwargs}. Error: {err.log_error()}')
             raise auth_exceptions.OAuthException(err.log_error())
 
-    async def fetch_token(self, code: str, state: str = None):
-        return await self._post_request(url=self.token_endpoint,
-                                        grant_type='authorization_code',
-                                        code=code)
+    async def fetch_token(self, code: str, state: str | None = None):
+        return await self._post_request(
+            url=self.token_endpoint,
+            grant_type='authorization_code',
+            code=code,
+        )
 
     async def refresh_tokens(self, refresh_token):
         return await self._post_request(url=self.token_endpoint,
@@ -80,6 +81,6 @@ class YandexOAuthService:
                 'Authorization': f'OAuth {access_token}',
             })
             if r.status_code == httpx.codes.OK:
-                return self.userinfo_converter(**r.json())
+                return OAuthUserInfoSchema.from_yandex(**r.json())
             logger.error(f'Request to userinfo: {r.status_code}. Error: {r.text}')
             raise auth_exceptions.OAuthException()

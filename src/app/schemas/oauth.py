@@ -43,7 +43,9 @@ class OAuthUserInfoSchema(BaseModel):
     last_name: str
 
     @classmethod
-    def from_yandex(cls, **data):
-        return cls(email=data.get('default_email'),
-                   first_name=data.get('first_name'),
-                   last_name=data.get('last_name'))
+    def from_yandex(cls, data: dict):
+        return cls(
+            email=data.get('default_email', ''),
+            first_name=data.get('first_name', ''),
+            last_name=data.get('last_name', ''),
+        )
