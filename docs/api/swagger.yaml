@@ -1,0 +1,573 @@
+openapi: 3.0.0
+info:
+  title: "Miami Movies: Auth"
+  version: v1
+servers:
+  - url: http://127.0.0.1:8888
+paths:
+
+  /api/v1/user/registration:
+    post:
+      tags:
+        - user
+      summary: "Регистрация пользователя"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegistration"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserItem'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: Unexpected Server Error
+
+  /api/v1/user/login:
+    post:
+      tags:
+        - user
+      summary: "Вход пользователя в аккаунт"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserAuth"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLogin'
+        '500':
+          description: Unexpected Server Error
+        '403':
+          description: Forbidden
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /api/v1/user/logout:
+    post:
+      tags:
+        - user
+      summary: "Выход пользователя из аккаунта"
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: Successful operation
+
+  /api/v1/user/info:
+    get:
+      tags:
+        - user
+      summary: "Получение информации об авторизованном пользователе"
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserItem'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Unexpected Server Error
+
+  /api/v1/user/role/list:
+    get:
+      tags:
+        - user
+      summary: "Получение списка ролей пользователя"
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/RoleItem'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Unexpected Server Error
+
+  /api/v1/user/change:
+    post:
+      tags:
+        - user
+      summary: "Редактирование данных пользователя"
+      security:
+        - AccessToken: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserEdit"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserItem'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Unexpected Server Error
+
+  /api/v1/user/password/change:
+    post:
+      tags:
+        - user
+      summary: "Изменение пароля пользователя"
+      security:
+        - AccessToken: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPasswordChange"
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserItem'
+
+  /api/v1/user/login/history:
+    post:
+      tags:
+        - user
+      summary: "История входов в аккаунт"
+      security:
+        - AccessToken: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaginationRequest"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    $ref: '#/components/schemas/LoginHistory'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationResponse'
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /api/v1/token/refresh:
+    post:
+      tags:
+        - token
+      summary: "Обновление токена"
+      security:
+        - RefreshToken: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenItem'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/v1/role/add:
+    post:
+      tags:
+        - role
+      summary: "Добавление роли"
+      security:
+        - AccessToken: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleBase"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/RoleItem'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/v1/role/list:
+    get:
+      tags:
+        - role
+      summary: "Получение списка ролей"
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/RoleItem'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/v1/role/{id}/get:
+    get:
+      tags:
+        - role
+      summary: "Получение роли по id"
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleItem'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/v1/role/{id}/change:
+    post:
+      tags:
+        - role
+      summary: "Изменение роли по id"
+      security:
+        - AccessToken: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleBase"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleItem'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/v1/role/{id}/delete:
+    delete:
+      deprecated: true
+      tags:
+        - role
+      summary: "Удаление роли"
+      security:
+        - AccessToken: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleBase"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleItem'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/v1/role/{id}/user/add:
+    post:
+      tags:
+        - role.user
+      summary: "Назначить пользователю роль."
+      security:
+        - AccessToken: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleUserBase"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleUserItem"
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/v1/role/{id}/user/delete:
+    post:
+      tags:
+        - role.user
+      summary: "Отобрать у пользователя роль."
+      security:
+        - AccessToken: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleUserBase"
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/v1/role/{id}/user/{id}/list:
+    get:
+      tags:
+        - role.user
+      summary: "Список ролей пользователя."
+      security:
+        - AccessToken: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/RoleBase"
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+components:
+  securitySchemes:
+    AccessToken:
+      type: apiKey
+      in: header
+      name: X-Access-Token
+    RefreshToken:
+      type: apiKey
+      in: header
+      name: X-Refresh-Token
+
+  schemas:
+    UserAuth:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    TokenItem:
+      type: object
+      properties:
+          access:
+            type: string
+          refresh:
+            type: string
+
+    UserLogin:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserItem'
+        tokens:
+          $ref: '#/components/schemas/TokenItem'
+
+    UserRegistration:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+      required:
+        - username
+        - password
+        - email
+    
+    UserItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    UserEdit:
+      type: object
+      properties:
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+
+    UserPasswordChange:
+      type: object
+      properties:
+        password:
+          type: string
+
+    PaginationRequest:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    PaginationResponse:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        all:
+          type: integer
+
+    LoginHistory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        ipv4:
+          type: string
+
+    RoleItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+
+    RoleBase:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+
+    RoleUserBase:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+    
+    RoleUserItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        role_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+
+    ValidationError:
+      type: object
+      properties:
+        error_fields:
+          description: >
+            Error codes:
+             * `428` - Обязательный параметр отсутствует
+             * `422` - Не корректное значение
+             * `424` - Нарушение связанности
+             * `409` - Объект с такими полями уже существует
+          type: object
+          properties:
+            field1:
+              type: integer
+              enum: [428, 422, 424]
+            field2:
+              type: integer
+              enum: [428, 422, 424]
+

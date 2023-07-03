@@ -1,0 +1,83 @@
+version: '3.8'
+
+networks:
+  auth-network:
+    external: true
+
+volumes:
+  postgres_data:
+
+services:
+
+  auth-nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    container_name: auth-nginx
+    restart: unless-stopped
+    networks:
+      - auth-network
+    depends_on:
+      - auth-backend
+
+  auth-backend:
+    container_name: auth-backend
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    networks:
+      - auth-network
+    depends_on:
+      auth-redis:
+        condition: service_healthy
+      auth-postgres:
+        condition: service_healthy
+    env_file:
+      - ./src/.env
+
+  auth-migration:
+    container_name: auth-migration
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    networks:
+      - auth-network
+    depends_on:
+      auth-postgres:
+        condition: service_healthy
+    env_file:
+      - ./src/.env
+    volumes:
+      - ./src:/opt/app
+    command: poetry run alembic upgrade head
+
+  auth-postgres:
+    container_name: auth-postgres
+    image: postgres:13
+    restart: unless-stopped
+    networks:
+      - auth-network
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  auth-redis:
+    container_name: auth-redis
+    image: redis:7.0.8-alpine
+    restart: unless-stopped
+    networks:
+      - auth-network
+    healthcheck:
+      test: redis-cli ping >/dev/null || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 5

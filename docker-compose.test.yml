@@ -1,0 +1,68 @@
+# KILL ME PLEASE
+
+version: '3.8'
+
+networks:
+  test-auth-network:
+    external: true
+
+services:
+  test-auth_api:
+    container_name: test-auth_api
+    build:
+      context: .
+      dockerfile: docker/auth_api_test/Dockerfile
+      args:
+        SERVICE_WORKDIR: ${SERVICE_WORKDIR}
+    networks:
+      - test-auth-network
+    depends_on:
+      test-postgres:
+        condition: service_healthy
+      test-redis:
+        condition: service_healthy
+    environment:
+      PROJECT_NAME: "test-auth_api"
+      REDIS_HOST: "test-redis"
+      REDIS_PORT: "6379"
+      SQL_HOST: "test-postgres"
+      SQL_PORT: "5432"
+      SQL_DATABASE: "test_db"
+      SQL_USER: "test_user"
+      SQL_PASSWORD: "test_password"
+    volumes:
+      - ./auth_api:${SERVICE_WORKDIR}
+
+  test-postgres:
+    container_name: test-postgres
+    restart: unless-stopped
+    image: postgres:13
+    networks:
+      - test-auth-network
+    environment:
+      POSTGRES_USER: "test_user"
+      POSTGRES_PASSWORD: "test_password"
+      POSTGRES_DB: "test_db"
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./docker/postgres/auth_schema.ddl:/docker-entrypoint-initdb.d/auth_database.sql
+    ports:
+      - 15432:5432
+
+  test-redis:
+    container_name: test-redis
+    image: redis:7.0.8-alpine
+    restart: unless-stopped
+    ports:
+      - 16379:6379
+    networks:
+      - test-auth-network
+    healthcheck:
+      test: redis-cli ping >/dev/null || exit 1
+      interval: 10s
+      timeout: 15s
+      retries: 5

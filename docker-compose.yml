@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+
+  auth-nginx:
+    ports:
+      - 80:80
+
+  auth-redis:
+    expose:
+      - 6379
+
+  auth-postgres:
+    expose:
+      - 5432
+
+  auth-backend:
+    expose:
+      - 8001
+    command: poetry run gunicorn -c gunicorn.conf.py main:app
