@@ -1,5 +1,5 @@
 from pydantic.main import BaseModel
-from app.schemas.request.common import PaginationRequestType
+from schemas.request.common import PaginationRequestType
 
 
 class HistoryRequest(BaseModel):

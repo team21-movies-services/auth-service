@@ -1,4 +1,5 @@
 create_network:
+	@docker network create movies-network 2>/dev/null || echo "movies-network is up-to-date"
 	@docker network create auth-network 2>/dev/null || echo "auth-network is up-to-date"
 
 create_test_network:
