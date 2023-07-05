@@ -1,12 +1,4 @@
 version: '3.8'
-
-networks:
-  auth-network:
-    external: true
-
-volumes:
-  postgres_data:
-
 services:
 
   auth-nginx:
@@ -16,6 +8,7 @@ services:
     container_name: auth-nginx
     restart: unless-stopped
     networks:
+      - movies-network
       - auth-network
     depends_on:
       - auth-backend
@@ -81,3 +74,13 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+networks:
+  movies-network:
+    external:
+      name: movies-network
+  auth-network:
+    external: true
+
+volumes:
+  postgres_data:

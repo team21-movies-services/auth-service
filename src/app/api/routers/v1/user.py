@@ -54,7 +54,7 @@ async def _login(
         auth_service: AuthServiceABC = Depends(),
         history_service: HistoryServiceABC = Depends(),
         user_agent: str = Header(),
-) -> TokensResponse:
+) -> UserResponse:
     logger.info(f"Login: {request_login.json(exclude={'password'})}")
     try:
         user_response = await user_service.login(request_login)
@@ -62,16 +62,18 @@ async def _login(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     try:
-        token_response: TokensResponse = await auth_service.create_token_pair(
+        tokens: TokensResponse = await auth_service.create_token_pair(
             user_id=user_response.id,
             is_superuser=user_response.is_superuser,
         )
     except AuthException:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    user_response.tokens = tokens
+
     await history_service.create_history_event(user_response.id, user_agent, ActionType.LOGIN)
     logger.info(f"Login complete: {user_response.json(include={'email'})}")
-    return token_response
+    return user_response
 
 
 @router.post(

@@ -4,6 +4,8 @@ from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime
 
+from schemas.response.token import TokensResponse
+
 
 class UserResponse(BaseModel):
     id: UUID
@@ -14,6 +16,8 @@ class UserResponse(BaseModel):
     is_active: bool
     created_at: datetime
     updated_at: datetime
+
+    tokens: Optional[TokensResponse] = None
 
     class Config:
         orm_mode = True
