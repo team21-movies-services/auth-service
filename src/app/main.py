@@ -9,6 +9,7 @@ from common.exceptions.auth import OAuthException
 from core.config import Settings
 from core.logger import LOGGING
 from dependencies.main import setup_dependencies
+from middleware.main import setup_middleware
 from providers.main import setup_providers
 
 # Применяем настройки логирования
@@ -27,6 +28,7 @@ def create_app(settings: Settings):
     setup_providers(app, settings)
     setup_routers(app)
     setup_dependencies(app)
+    setup_middleware(app)
     return app
 
 
