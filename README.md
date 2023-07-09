@@ -1,6 +1,6 @@
 # auth-service
 
-* link =
+* link = https://github.com/team21-movies-services/auth-service
 
 # Стек технологий
 - Frontend (Nginx) - маршрутизация запросов
