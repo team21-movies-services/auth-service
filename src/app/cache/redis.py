@@ -18,5 +18,17 @@ class RedisCacheService(CacheServiceABC):
         await self.redis.delete(key)
         return None
 
-    async def put_to_cache(self, key: str, value: Union[str, bytes], expire: int, **kwargs) -> None:
+    async def put_to_cache(
+        self,
+        key: str,
+        value: Union[str, bytes],
+        expire: int,
+        **kwargs,
+    ) -> None:
         await self.redis.set(key, value, expire)
+
+    async def increment(self, key: str, amount: int = 1) -> int:
+        return await self.redis.incr(key, amount=amount)
+
+    async def set_expire(self, key: str, expire: int = 1) -> int:
+        return await self.redis.expire(key, expire)

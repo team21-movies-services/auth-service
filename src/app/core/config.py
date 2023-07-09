@@ -1,11 +1,11 @@
 import os
 
 from pydantic import BaseSettings, Field
+from core.oauth_config import OAuthConfig
+from common.enums import RateLimitPeriodEnum
+
 
 # Настройки Redis
-from core.oauth_config import OAuthConfig
-
-
 class RedisConfig(BaseSettings):
     port: int = Field(default=6379, env='REDIS_PORT')
     host: str = Field(default='127.0.0.1', env='REDIS_HOST')
@@ -34,11 +34,18 @@ class PostgresConfig(BaseSettings):
         return f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
 
 
+class RateLimitConfig(BaseSettings):
+    rate_limit_max_request: int = Field(default=100, env='RATE_LIMIT_MAX_REQUEST')
+    # FIXME: не устанавливается из env...
+    rate_limit_period: RateLimitPeriodEnum = Field(default=RateLimitPeriodEnum, env='RATE_LIMIT_PERIOD')
+
+
 # Название проекта. Используется в Swagger-документации
 class ProjectConfig(BaseSettings):
     name: str = Field(default='auth_api', env='PROJECT_NAME')
     log_level: str = Field(default='INFO', env='LOG_LEVEL')
     jwt_secret_key: str = Field(default='asdnjklnjkl123412bjk4bjk', env='JWT_SECRET_KEY')
+    rate_limit: RateLimitConfig = RateLimitConfig()
 
 
 class Settings(BaseSettings):
