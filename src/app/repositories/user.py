@@ -8,13 +8,16 @@ from common.exceptions.user import UserAlreadyExists, UserNotExists
 
 from repositories.base import SQLAlchemyRepository
 from models.user import AuthUser
+from telemetry.main import get_current_tracer
 
 logger = logging.getLogger(__name__)
+tracer = get_current_tracer()
 
 
 class UserRepository(SQLAlchemyRepository):
     model = AuthUser
 
+    @tracer.start_as_current_span("UserRepository: get_user_by_field")
     async def get_user_by_field(self, raise_if_notfound: bool = True,
                                 **fields) -> Optional[AuthUser]:
         """Получение записи пользователя по полю если оно существует"""
@@ -26,12 +29,14 @@ class UserRepository(SQLAlchemyRepository):
 
         return result
 
+    @tracer.start_as_current_span("UserRepository: update_user_fields")
     async def update_user_fields(self, user_db: AuthUser, **fields) -> None:
         for field, value in fields.items():
             if hasattr(user_db, field):
                 setattr(user_db, field, value)
         await self.session.commit()
 
+    @tracer.start_as_current_span("UserRepository: create_user")
     async def create_user(self, **fields) -> AuthUser:
         """Создание пользователя в БД postgres."""
         db_user = self.model(**fields)
