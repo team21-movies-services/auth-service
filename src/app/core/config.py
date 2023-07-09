@@ -11,6 +11,11 @@ class RedisConfig(BaseSettings):
     host: str = Field(default='127.0.0.1', env='REDIS_HOST')
 
 
+class TraceConfig(BaseSettings):
+    jaeger_port: int = Field(default=6831, env='JAEGER_UDP_PORT')
+    jaeger_host: str = Field(default='127.0.0.1', env='JAEGER_HOST')
+
+
 # Настройки Postgres
 class PostgresConfig(BaseSettings):
     echo_log: bool = Field(default=False, env='DB_ECHO_LOG')
@@ -41,6 +46,7 @@ class Settings(BaseSettings):
     redis: RedisConfig = RedisConfig()
     postgres: PostgresConfig = PostgresConfig()
     oauth: OAuthConfig = OAuthConfig()
+    tracer: TraceConfig = TraceConfig()
 
 
 settings = Settings()

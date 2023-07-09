@@ -26,6 +26,8 @@ services:
         condition: service_healthy
       auth-postgres:
         condition: service_healthy
+      auth-jaeger:
+        condition: service_healthy
     env_file:
       - ./src/.env
 
@@ -56,7 +58,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      test:
+        [
+          "CMD-SHELL",
+          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"
+        ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -74,6 +80,20 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  auth-jaeger:
+    container_name: auth-jaeger
+    image: jaegertracing/all-in-one:latest
+    restart: unless-stopped
+    networks:
+      - auth-network
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider ${JAEGER_HOST}:${JAEGER_PORT}/search || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - ./src/.env
 
 networks:
   movies-network:
