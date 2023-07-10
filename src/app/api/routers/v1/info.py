@@ -3,6 +3,10 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status, Header
 
+from common.enums import RateLimitPeriodEnum
+from dependencies.common import get_rate_limit
+from utils.rate_limit import RateLimiter
+
 from models.history import ActionType
 from schemas.request.info import HistoryRequest
 from schemas.request.user import UserChangeInfoSchema
@@ -28,9 +32,11 @@ logger = logging.getLogger().getChild('info-actions')
     response_model=UserResponse,
 )
 async def _user_info(
-        user_service: UserServiceABC = Depends(),
-        auth_data: AuthData = Depends(get_auth_data),
+    user_service: UserServiceABC = Depends(),
+    auth_data: AuthData = Depends(get_auth_data),
+    rate_limit: RateLimiter = Depends(get_rate_limit),
 ) -> UserResponse:
+    await rate_limit.check_limit(resource='user_info')
     try:
         user_response = await user_service.user_info(auth_data.user_id)
     except UserException:
@@ -46,12 +52,17 @@ async def _user_info(
     response_model=UserResponse,
 )
 async def _change_user_info(
-        request_user_info: UserChangeInfoSchema,
-        user_service: UserServiceABC = Depends(),
-        history_service: HistoryServiceABC = Depends(),
-        auth_data: AuthData = Depends(get_auth_data),
-        user_agent: str = Header(),
+    request_user_info: UserChangeInfoSchema,
+    user_service: UserServiceABC = Depends(),
+    history_service: HistoryServiceABC = Depends(),
+    rate_limit: RateLimiter = Depends(get_rate_limit),
+    auth_data: AuthData = Depends(get_auth_data),
+    user_agent: str = Header(),
 ) -> UserResponse:
+    await rate_limit.check_limit(
+        resource="user_change", max_requests=5, period=RateLimitPeriodEnum.minutes,
+    )
+
     try:
         user_response = await user_service.change_info(auth_data.user_id, request_user_info)
     except UserException:
@@ -71,10 +82,12 @@ async def _change_user_info(
     response_model=List[HistoryResponse],
 )
 async def _history(
-        history_request: HistoryRequest = Depends(),
-        auth_data: AuthData = Depends(get_auth_data),
-        history_service: HistoryServiceABC = Depends(),
+    history_request: HistoryRequest = Depends(),
+    auth_data: AuthData = Depends(get_auth_data),
+    history_service: HistoryServiceABC = Depends(),
+    rate_limit: RateLimiter = Depends(get_rate_limit),
 ) -> List[HistoryResponse]:
+    await rate_limit.check_limit(resource='user_login_history')
     history_response_list = await history_service.history_events(
         user_id=auth_data.user_id,
         history_request=history_request,
@@ -89,7 +102,9 @@ async def _history(
     response_model=List[RoleResponse],
 )
 async def _roles(
-        auth_data: AuthData = Depends(get_auth_data),
-        role_service: RoleServiceABC = Depends(),
+    auth_data: AuthData = Depends(get_auth_data),
+    role_service: RoleServiceABC = Depends(),
+    rate_limit: RateLimiter = Depends(get_rate_limit),
 ) -> List[RoleResponse]:
+    await rate_limit.check_limit(resource='user_roles')
     return await role_service.get_roles_by_user(user_id=auth_data.user_id)

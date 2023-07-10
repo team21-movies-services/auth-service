@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 
 from typing import AsyncGenerator
 
@@ -6,6 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from redis.asyncio import Redis
 
 from core.config import Settings
+from utils.rate_limit import RateLimiter
+from cache import RedisCacheService
 
 
 async def get_session(
@@ -33,3 +35,19 @@ async def get_redis_client(
 
 def get_settings():
     return Settings()
+
+
+def get_rate_limit(
+    request: Request,
+    settings: Settings = Depends(get_settings),
+    redis_client: Redis = Depends(get_redis_client),
+):
+    client_host = request.client.host  # type: ignore
+    cache_client = RedisCacheService(redis_client)
+
+    return RateLimiter(
+        max_requests=settings.project.rate_limit.rate_limit_max_request,
+        period=settings.project.rate_limit.rate_limit_period,
+        cache_client=cache_client,
+        client_id=client_host,
+    )
