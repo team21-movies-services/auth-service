@@ -8,7 +8,7 @@ from core.config import Settings
 from dependencies.common import get_settings, get_redis_client
 from redis.asyncio import Redis
 
-from cache.redis import RedisCacheService
+from wrappers.cache.redis import RedisCacheService
 
 
 @add_factory_to_mapper(AuthServiceABC)

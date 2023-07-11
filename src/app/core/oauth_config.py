@@ -2,7 +2,7 @@ from pydantic.env_settings import BaseSettings
 from pydantic.fields import Field
 
 
-class YandexOAuth(BaseSettings):
+class YandexOAuthConfig(BaseSettings):
     valid_keys: set = {
         "device_id",
         "device_name",
@@ -19,4 +19,4 @@ class YandexOAuth(BaseSettings):
 
 
 class OAuthConfig(BaseSettings):
-    yandex: YandexOAuth = YandexOAuth()
+    yandex: YandexOAuthConfig = YandexOAuthConfig()

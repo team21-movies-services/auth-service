@@ -2,3 +2,4 @@ from .user_service_factory import create_user_service
 from .auth_service_factory import create_auth_service
 from .history_service_factory import create_history_service
 from .role_service_factory import create_role_service
+from .oauth_service_factory import create_yandex_oauth_service
