@@ -32,9 +32,9 @@ class SQLAlchemyProvider(BaseProvider):
             autoflush=False,
         )
 
-        SQLAlchemyInstrumentor().instrument(engine=self.async_engine.engine)
-
         setattr(self.app.state, "async_session_maker", self.async_session_maker)
+
+        SQLAlchemyInstrumentor().instrument(engine=self.async_engine.engine)
 
     async def shutdown(self):
         """FastAPI shutdown event"""
