@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 
 from providers import BaseProvider
 
@@ -30,6 +31,8 @@ class SQLAlchemyProvider(BaseProvider):
             autocommit=False,
             autoflush=False,
         )
+
+        SQLAlchemyInstrumentor().instrument(engine=self.async_engine.engine)
 
         setattr(self.app.state, "async_session_maker", self.async_session_maker)
 

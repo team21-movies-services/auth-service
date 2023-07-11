@@ -13,12 +13,10 @@ from schemas.request.user import (
     UserLoginSchema, UserChangePasswordSchema,
 )
 from schemas.response.user import UserResponse
-from telemetry.main import get_current_tracer
 
 
 pwd_context = CryptContext(schemes=["bcrypt"])
 logger = logging.getLogger(__name__)
-tracer = get_current_tracer()
 
 
 class UserServiceABC(ABC):
@@ -53,7 +51,6 @@ class UserService(UserServiceABC):
     def __init__(self, user_repository: UserRepository) -> None:
         self.user_repository = user_repository
 
-    @tracer.start_as_current_span("UserService: get_or_create_user_from_oauth")
     async def get_or_create_user_from_oauth(self, user_data: OAuthUserInfoSchema) -> uuid.UUID:
         """Создание пользователя на основе данных полученных из стороннего сервиса аутентификации."""
         user_db = await self.user_repository.get_by(email=user_data.email)
@@ -68,7 +65,6 @@ class UserService(UserServiceABC):
         """Валидация пароля."""
         return pwd_context.verify(plan_password, hashed_password)
 
-    @tracer.start_as_current_span("UserService: create_user")
     async def create_user(self, user_schema: UserRegistrationSchema) -> UserResponse:
         """Создание пользователя."""
         user_schema.password = pwd_context.encrypt(user_schema.password)
@@ -79,7 +75,6 @@ class UserService(UserServiceABC):
 
         return UserResponse.from_orm(user_db)
 
-    @tracer.start_as_current_span("UserService: login")
     async def login(self, login_schema: UserLoginSchema) -> UserResponse:
         """Логин пользователя."""
         user_db = await self.user_repository.get_user_by_field(email=login_schema.email)
@@ -89,7 +84,6 @@ class UserService(UserServiceABC):
 
         return UserResponse.from_orm(user_db)
 
-    @tracer.start_as_current_span("UserService: change_info")
     async def change_info(self, user_id: uuid.UUID,
                           info_schema: UserChangeInfoSchema) -> UserResponse:
         """Изменение информации о пользователе"""
@@ -98,7 +92,6 @@ class UserService(UserServiceABC):
         await self.user_repository.update_user_fields(user_db, **info_schema.dict())
         return UserResponse.from_orm(user_db)
 
-    @tracer.start_as_current_span("UserService: password_change")
     async def password_change(self, user_id: uuid.UUID,
                               password_schema: UserChangePasswordSchema) -> UserResponse:
         """Изменение пароля пользователя"""
@@ -115,7 +108,6 @@ class UserService(UserServiceABC):
         )
         return UserResponse.from_orm(user_db)
 
-    @tracer.start_as_current_span("UserService: user_info")
     async def user_info(self, user_id: uuid.UUID) -> UserResponse:
         """Получение информации о пользователе"""
         user_db = await self.user_repository.get_user_by_field(id=user_id)
