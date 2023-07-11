@@ -1,14 +1,14 @@
 import logging
 
 from fastapi import FastAPI
-from opentelemetry.trace import set_tracer_provider, get_tracer, Tracer
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.resources import Resource
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.trace import Tracer, get_tracer, set_tracer_provider
+from telemetry.console import setup_console
+from telemetry.jaeger import setup_jaeger
 
 from core.config import Settings, settings
-from telemetry.jaeger import setup_jaeger
-from telemetry.console import setup_console
 
 
 logger = logging.getLogger(__name__)
@@ -29,8 +29,9 @@ def setup_telemetry(app: FastAPI, settings: Settings):
     setup_jaeger(tracer, settings)
     logger.info(f"Setup Jaeger Tracer - host:port: {settings.tracer.jaeger_host}:{settings.tracer.jaeger_port}")
 
-    setup_console(tracer)
-    logger.info("Setup Console Tracer")
+    if settings.tracer.debug_trace:
+        setup_console(tracer)
+        logger.info("Setup Console Tracer")
 
     FastAPIInstrumentor.instrument_app(app)
 
