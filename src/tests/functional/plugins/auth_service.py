@@ -1,6 +1,6 @@
 import pytest_asyncio
 
-from cache.redis import RedisCacheService
+from wrappers.cache.redis import RedisCacheService
 from functional.settings import Settings
 from models import AuthUser
 from services.auth import AuthService

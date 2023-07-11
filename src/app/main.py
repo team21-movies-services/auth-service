@@ -29,8 +29,8 @@ def create_app(settings: Settings):
     setup_providers(app, settings)
     setup_routers(app)
     setup_dependencies(app)
-    setup_middleware(app)
-    setup_telemetry(app, settings)
+    # setup_middleware(app)
+    # setup_telemetry(app, settings)
     return app
 
 

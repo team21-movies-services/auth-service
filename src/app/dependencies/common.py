@@ -7,11 +7,11 @@ from redis.asyncio import Redis
 
 from core.config import Settings
 from utils.rate_limit import RateLimiter
-from cache import RedisCacheService
+from wrappers.cache import RedisCacheService
 
 
 async def get_session(
-        request: Request,
+    request: Request,
 ) -> AsyncGenerator[AsyncSession, None]:
     app: FastAPI = request.app
     session_maker = app.state.async_session_maker
@@ -23,7 +23,7 @@ async def get_session(
 
 
 async def get_redis_client(
-        request: Request,
+    request: Request,
 ) -> AsyncGenerator[Redis, None]:
     app: FastAPI = request.app
     redis_client: Redis = app.state.async_redis_client
@@ -31,6 +31,14 @@ async def get_redis_client(
         yield redis_client
     finally:
         await redis_client.close()
+
+
+async def get_httpx_client(
+    request: Request,
+):
+    app: FastAPI = request.app
+    http_client: Redis = app.state.async_http_client
+    yield http_client
 
 
 def get_settings():

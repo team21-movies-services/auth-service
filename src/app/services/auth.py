@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from schemas.auth import AuthData, RefreshData
 
-from cache.base import CacheServiceABC
+from wrappers.cache.base import CacheServiceABC
 
 from common.constants import EXPIRE_ACCESS_TOKEN, EXPIRE_REFRESH_TOKEN
 import common.exceptions.auth as auth_exceptions
