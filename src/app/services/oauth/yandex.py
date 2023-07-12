@@ -2,7 +2,10 @@ from uuid import UUID
 import logging
 from typing import Any
 
+from pydantic import ValidationError
+
 from abc import ABC, abstractmethod
+from common.exceptions.base import OAuthRequestError
 
 import httpx
 from httpx import Response
@@ -20,16 +23,35 @@ from schemas.oauth import (
 from core.oauth_config import YandexOAuthConfig
 from services.oauth.enums import YandexOAuthEndpointEnum
 from wrappers.http import AsyncHTTPClientABC
+from wrappers.http.exceptions import ClientErrorException
+
 from utils.common import append_query_params_to_url
 
-from domain.oauth.yandex.dto import AuthorizationUrlDto
+from domain.oauth.dto import OAuthTokenDto, OAuthUserInfoDto
+from domain.oauth.yandex.dto import AuthorizationUrlDto, OAuthRequestTokenDto
+
+from domain.oauth.yandex.request import OAuthRequestTokenSchema
+from domain.oauth.yandex.response import (
+    OAuthResponseTokenSchema, OAuthUserInfoSchema
+)
 
 logger = logging.getLogger(__name__)
 
 
 class YandexOAuthServiceABC:
+    def create_authorization_url(self, auth_url_dto: AuthorizationUrlDto) -> str:
+        ...
 
-    def create_authorization_url(self, redirect_uri: str, device_id: UUID) -> str:
+    async def fetch_token(
+        self,
+        oauth_request_token: OAuthRequestTokenDto,
+    ) -> OAuthTokenDto:
+        ...
+
+    async def get_user_info(self, auth_url_dto: AuthorizationUrlDto) -> str:
+        ...
+
+    async def user_info(self, token_dto: OAuthTokenDto) -> OAuthUserInfoDto:
         ...
 
 
@@ -43,41 +65,58 @@ class YandexOAuthService:
         self.config = config
         self.cache_client = cache_client
         self.http_client = http_client
+        self._common_request_params = {
+            "client_id": self.config.client_id,
+            "client_secret": self.config.client_secret,
+        }
 
-    def create_authorization_url(self, redirect_uri: str, device_id: UUID) -> str:
-        auth_url_dto = AuthorizationUrlDto(
-            response_type="code",
-            client_id=self.config.client_id,
-            redirect_uri=redirect_uri,
-            device_id=device_id,
+    def create_authorization_url(self, auth_url_dto: AuthorizationUrlDto) -> str:
+        """Генерация ссылки для входа в oauth yandex."""
+        auth_url_dto.response_type = "code"
+        auth_url_dto.client_id = self.config.client_id
+        return append_query_params_to_url(
+            YandexOAuthEndpointEnum.authorization_endpoint,
+            auth_url_dto.as_dict(),
         )
-        return append_query_params_to_url(YandexOAuthEndpointEnum.authorization_endpoint, auth_url_dto.as_dict())
 
-    # async def _post_request(
-    #     self, url: str, response_schema: Any = OAuthTokens, **kwargs
-    # ):
-    #     async with httpx.AsyncClient() as client:
-    #         r: Response = await client.post(
-    #             url,
-    #             data={
-    #                 "client_id": self.config.client_id,
-    #                 "client_secret": self.config.client_secret,
-    #                 **kwargs,
-    #             },
-    #         )
-    #         if r.status_code == httpx.codes.OK:
-    #             return response_schema(**r.json())
+    async def fetch_token(
+        self,
+        oauth_request_token: OAuthRequestTokenDto,
+    ) -> OAuthTokenDto:
+        """Получение access токена через oauth yandex."""
 
-    #         err = OAuthTokensError(**r.json())
-    #         logger.error(f"Request to token: {kwargs}. Error: {err.log_error()}")
-    #         raise auth_exceptions.OAuthException(err.log_error())
+        try:
+            token_request = OAuthRequestTokenSchema(
+                **self._common_request_params,
+                grant_type="authorization_code",
+                code=oauth_request_token.code,
+            )
+            response = await self.http_client.post(
+                path=YandexOAuthEndpointEnum.token_endpoint,
+                data=token_request.dict(),
+            )
+            response_token = OAuthResponseTokenSchema(**response)
+        except (ValidationError, ClientErrorException) as error:
+            logger.error(f"Can't fetch token from oauth yandex. Error={error}")
+            raise OAuthRequestError("Some error from fetch token")
 
-    # async def fetch_token(self, code: str, state: str | None = None):
-    #     return await self._post_request(
-    #         url=self.token_endpoint,
-    #         grant_type="authorization_code",
-    #         code=code,
-    #     )
+        return OAuthTokenDto.from_yandex_response(response_token)
+
+    async def user_info(self, token_dto: OAuthTokenDto) -> OAuthUserInfoDto:
+
+        try:
+            response = await self.http_client.get(
+                path=YandexOAuthEndpointEnum.user_info,
+                headers={
+                    "Authorization": f"OAuth {token_dto.access_token}",
+                },
+            )
+            response_user = OAuthUserInfoSchema(**response)
+        except (ValidationError, ClientErrorException) as error:
+            logger.error(f"Can't get user info from oauth yandex. Error={error}")
+            raise OAuthRequestError("Some error from get user info")
+
+        return OAuthUserInfoDto.from_yandex_response(response_user)
 
     # async def refresh_tokens(self, refresh_token):
     #     return await self._post_request(
@@ -101,16 +140,3 @@ class YandexOAuthService:
     #     await self.cache_client.put_to_cache(
     #         f"oauth-{user_id}", tokens.access_token, expire=tokens.expires_in
     #     )
-
-    # async def user_info(self, access_token):
-    #     async with httpx.AsyncClient() as client:
-    #         r: Response = await client.get(
-    #             self.userinfo,
-    #             headers={
-    #                 "Authorization": f"OAuth {access_token}",
-    #             },
-    #         )
-    #         if r.status_code == httpx.codes.OK:
-    #             return OAuthUserInfoSchema.from_yandex(**r.json())
-    #         logger.error(f"Request to userinfo: {r.status_code}. Error: {r.text}")
-    #         raise auth_exceptions.OAuthException()

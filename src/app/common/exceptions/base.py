@@ -8,3 +8,7 @@ class ObjectDoesNotExist(Exception):
 
 class TooManyRequests(AppException):
     """Too Many Requests Exception"""
+
+
+class OAuthRequestError(AppException):
+    """OAuth Request Error"""

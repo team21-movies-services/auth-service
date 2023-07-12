@@ -17,7 +17,7 @@ class AsyncHTTPClientABC(ABC):
         self,
         path: str,
         headers: Optional[dict] = None,
-        json: Optional[dict] = None,
+        data: Optional[dict] = None,
         params: Optional[dict] = None,
     ) -> Any:
         raise NotImplementedError

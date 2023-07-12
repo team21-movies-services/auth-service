@@ -30,8 +30,8 @@ class OAuthTokensError(BaseModel):
         return f'{self.error} - {self.error_description}'
 
 
-class CodeResponse(BaseModel):
-    code: Optional[str]
+class OAuthCodeRequestSchema(BaseModel):
+    code: Optional[int]
     state: Optional[str]
     error: Optional[str]
     error_description: Optional[str]
