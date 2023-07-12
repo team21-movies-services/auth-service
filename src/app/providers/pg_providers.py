@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 
 from providers import BaseProvider
 
@@ -32,6 +33,8 @@ class SQLAlchemyProvider(BaseProvider):
         )
 
         setattr(self.app.state, "async_session_maker", self.async_session_maker)
+
+        SQLAlchemyInstrumentor().instrument(engine=self.async_engine.engine)
 
     async def shutdown(self):
         """FastAPI shutdown event"""
