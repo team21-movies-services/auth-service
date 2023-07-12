@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import Header, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,6 +13,6 @@ class DeviceService:
         self.device_repository = DeviceRepository(session=session)
         self.user_agent = user_agent
 
-    async def get_device_id(self):
+    async def get_device_id(self) -> UUID:
         device_db = await self.device_repository.get_or_create(user_agent=self.user_agent)
         return device_db.id
