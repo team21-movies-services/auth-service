@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import Literal
 
 from dataclasses import dataclass
@@ -20,3 +19,10 @@ class AccessTokenUrlDto(BaseDTO):
     client_secret: str
     redirect_uri: str
     code: str
+
+
+@dataclass
+class UserInfoUrlDto(BaseDTO):
+    access_token: str
+    user_ids: int
+    v: str = "5.131"

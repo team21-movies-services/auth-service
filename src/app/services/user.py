@@ -46,7 +46,7 @@ class UserServiceABC(ABC):
         ...
 
     @abstractmethod
-    async def get_or_create_user_from_oauth(self, user_data: OAuthUserInfoDto) -> uuid.UUID:
+    async def get_or_create_user_from_oauth(self, user_data: OAuthUserInfoDto) -> UserResponse:
         ...
 
 
@@ -54,7 +54,7 @@ class UserService(UserServiceABC):
     def __init__(self, user_repository: UserRepository) -> None:
         self.user_repository = user_repository
 
-    async def get_or_create_user_from_oauth(self, user_data: OAuthUserInfoDto) -> uuid.UUID:
+    async def get_or_create_user_from_oauth(self, user_data: OAuthUserInfoDto) -> UserResponse:
         """Создание пользователя на основе данных полученных из стороннего сервиса аутентификации."""
         user_db = await self.user_repository.get_by(email=user_data.email)
         if not user_db:
@@ -62,7 +62,7 @@ class UserService(UserServiceABC):
             #  в дальнейшем и будет доступен только сброс пароля?
             password = pwd_context.encrypt(str(uuid.uuid4()))
             user_db = await self.user_repository.create_user(password=password, **user_data.as_dict())
-        return user_db.id
+        return UserResponse.from_orm(user_db)
 
     def _verify_password(self, plan_password: str, hashed_password: str) -> bool:
         """Валидация пароля."""

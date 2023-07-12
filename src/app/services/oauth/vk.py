@@ -1,4 +1,5 @@
 import logging
+from abc import ABC, abstractmethod
 
 from wrappers.cache.base import CacheServiceABC
 
@@ -7,22 +8,32 @@ from services.oauth.enums import VKOAuthEndpointEnum
 from wrappers.http import AsyncHTTPClientABC
 from utils.common import append_query_params_to_url
 
-from domain.oauth.vk.dto import AuthorizationUrlDto, AccessTokenUrlDto
-from domain.oauth.vk.response import OAuthResponseTokenSchema
+from domain.oauth.vk.dto import AuthorizationUrlDto, AccessTokenUrlDto, UserInfoUrlDto
+from domain.oauth.dto import OAuthUserInfoDto
+from domain.oauth.vk.response import VKOAuthResponseTokenSchema, VKOAuthResponseUserInfoSchema
+from wrappers.http.exceptions import ClientErrorException
+from pydantic import ValidationError
+from common.exceptions.base import OAuthRequestError
 
 logger = logging.getLogger(__name__)
 
 
-class VKOAuthServiceABC:
+class VKOAuthServiceABC(ABC):
 
+    @abstractmethod
     def create_authorization_url(self, redirect_uri: str) -> str:
-        ...
+        raise NotImplementedError
 
-    async def fetch_access_token(self, redirect_uri: str, code: str) -> OAuthResponseTokenSchema:
-        ...
+    @abstractmethod
+    async def fetch_access_token(self, redirect_uri: str, code: str) -> VKOAuthResponseTokenSchema:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def fetch_user_info(self, vk_access_info: VKOAuthResponseTokenSchema) -> OAuthUserInfoDto:
+        raise NotImplementedError
 
 
-class VKOAuthService:
+class VKOAuthService(VKOAuthServiceABC):
     def __init__(
         self,
         cache_client: CacheServiceABC,
@@ -43,25 +54,6 @@ class VKOAuthService:
         )
         return append_query_params_to_url(VKOAuthEndpointEnum.authorization_endpoint, auth_url_dto.as_dict())
 
-    # async def _post_request(
-    #     self, url: str, response_schema: Any = OAuthTokens, **kwargs
-    # ):
-    #     async with httpx.AsyncClient() as client:
-    #         r: Response = await client.post(
-    #             url,
-    #             data={
-    #                 "client_id": self.config.client_id,
-    #                 "client_secret": self.config.client_secret,
-    #                 **kwargs,
-    #             },
-    #         )
-    #         if r.status_code == httpx.codes.OK:
-    #             return response_schema(**r.json())
-
-    #         err = OAuthTokensError(**r.json())
-    #         logger.error(f"Request to token: {kwargs}. Error: {err.log_error()}")
-    #         raise auth_exceptions.OAuthException(err.log_error())
-
     def _create_access_token_url(self, redirect_uri: str, code: str) -> str:
 
         access_url_dto = AccessTokenUrlDto(
@@ -72,45 +64,26 @@ class VKOAuthService:
         )
         return append_query_params_to_url(VKOAuthEndpointEnum.token_endpoint, access_url_dto.as_dict())
 
-    async def fetch_access_token(self, redirect_uri: str, code: str) -> OAuthResponseTokenSchema:
+    def _create_user_info_url(self, access_token: str, user_id: int) -> str:
+        user_url_dto = UserInfoUrlDto(access_token=access_token, user_ids=user_id)
+        return append_query_params_to_url(VKOAuthEndpointEnum.user_info, user_url_dto.as_dict())
+
+    async def fetch_access_token(self, redirect_uri: str, code: str) -> VKOAuthResponseTokenSchema:
         get_access_token_url = self._create_access_token_url(redirect_uri, code)
-        response = await self.http_client.get(get_access_token_url)
-        response_token = OAuthResponseTokenSchema(**response)
-        print(response_token)
+        try:
+            response = await self.http_client.get(get_access_token_url)
+            response_token = VKOAuthResponseTokenSchema(**response)
+        except (ValidationError, ClientErrorException) as error:
+            logger.error(f"Can't fetch token from oauth vk. Error={error}")
+            raise OAuthRequestError("Some error from fetch token")
         return response_token
 
-    # async def refresh_tokens(self, refresh_token):
-    #     return await self._post_request(
-    #         url=self.token_endpoint,
-    #         grant_type="refresh_token",
-    #         refresh_token=refresh_token,
-    #     )
-
-    # async def revoke_token(self, user_id) -> ResponseStatus:
-    #     access_token = await self.cache_client.get_from_cache(f"oauth-{user_id}")
-    #     if not access_token:
-    #         logger.info("OAuth access token already expire. user_id - {user_id}")
-    #         return ResponseStatus(status="ok")
-    #     return await self._post_request(
-    #         url=self.token_revoke,
-    #         response_schema=ResponseStatus,
-    #         access_token=access_token,
-    #     )
-
-    # async def add_access_token_to_cache(self, user_id, tokens: OAuthTokens):
-    #     await self.cache_client.put_to_cache(
-    #         f"oauth-{user_id}", tokens.access_token, expire=tokens.expires_in
-    #     )
-
-    # async def user_info(self, access_token):
-    #     async with httpx.AsyncClient() as client:
-    #         r: Response = await client.get(
-    #             self.userinfo,
-    #             headers={
-    #                 "Authorization": f"OAuth {access_token}",
-    #             },
-    #         )
-    #         if r.status_code == httpx.codes.OK:
-    #             return OAuthUserInfoSchema.from_yandex(**r.json())
-    #         logger.error(f"Request to userinfo: {r.status_code}. Error: {r.text}")
-    #         raise auth_exceptions.OAuthException()
+    async def fetch_user_info(self, vk_access_info: VKOAuthResponseTokenSchema) -> OAuthUserInfoDto:
+        get_user_info_url = self._create_user_info_url(vk_access_info.access_token, vk_access_info.user_id)
+        try:
+            response = await self.http_client.get(get_user_info_url)
+            user_info = VKOAuthResponseUserInfoSchema(**response["response"][0], email=vk_access_info.email)
+        except (ValidationError, ClientErrorException, KeyError, TypeError, IndexError) as error:
+            logger.error(f"Can't get user info from oauth vk. Error={error}")
+            raise OAuthRequestError("Some error from get user info")
+        return OAuthUserInfoDto.from_vk_response(user_info)
