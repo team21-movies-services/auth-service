@@ -4,6 +4,7 @@ from redis.asyncio import Redis
 
 from providers import BaseProvider
 from common.exceptions import AppException
+from opentelemetry.instrumentation.redis import RedisInstrumentor
 
 
 class RedisProvider(BaseProvider):
@@ -25,6 +26,8 @@ class RedisProvider(BaseProvider):
             raise AppException()
 
         setattr(self.app.state, "async_redis_client", self.redis_client)
+
+        RedisInstrumentor().instrument()
 
     async def shutdown(self):
         """FastAPI shutdown event"""
