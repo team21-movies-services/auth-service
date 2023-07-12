@@ -7,45 +7,70 @@ from fastapi.responses import RedirectResponse
 from common.exceptions import AuthException
 from dependencies.auth import get_auth_data
 from schemas.auth import AuthData
-from schemas.oauth import CodeResponse, OAuthTokens, ResponseStatus, OAuthUserInfoSchema
+from schemas.oauth import (
+    OAuthCodeRequestSchema,
+    OAuthTokens,
+    ResponseStatus,
+    OAuthUserInfoSchema,
+)
 from schemas.response.token import TokensResponse
 from services import UserServiceABC, AuthServiceABC
 from services.device import DeviceService
 from services.oauth.yandex import YandexOAuthServiceABC
 
-router = APIRouter(prefix='/yandex', tags=['Авторизация через сторонние сервисы'])
-logger = logging.getLogger().getChild('oauth-actions')
+from domain.oauth.dto import OAuthTokenDto, OAuthUserInfoDto
+from domain.oauth.yandex.dto import AuthorizationUrlDto, OAuthRequestTokenDto
+
+
+router = APIRouter(prefix="/yandex", tags=["Авторизация через сторонние сервисы"])
+logger = logging.getLogger().getChild("oauth-actions")
 
 
 @router.get(
-    '/login',
+    "/login",
     summary="Вход OAuth",
     description="Авторизация пользователя через oauth yandex",
 )
 async def _yandex_login(
     request: Request,
     device_service: DeviceService = Depends(),
-    yandex_oauth: YandexOAuthServiceABC = Depends(),
+    yandex_oauth_service: YandexOAuthServiceABC = Depends(),
 ) -> RedirectResponse:
     redirect_uri = request.url_for("_yandex_callback")
     device_id = await device_service.get_device_id()
-
-    oauth_authorization_url = yandex_oauth.create_authorization_url(
+    auth_url_dto = AuthorizationUrlDto(
         redirect_uri=str(redirect_uri),
         device_id=device_id,
     )
+    oauth_authorization_url = yandex_oauth_service.create_authorization_url(auth_url_dto)
     logger.info(oauth_authorization_url)
     return RedirectResponse(oauth_authorization_url)
 
 
 @router.get(
-    '/callback',
+    "/callback",
     summary="Коллбэк при успешной авторизации через oauth yandex",
 )
 async def _yandex_callback(
-    params: CodeResponse = Depends(),
-):
-    return {"dsa": 1}
+    oauth_code_req: OAuthCodeRequestSchema = Depends(),
+    yandex_oauth_service: YandexOAuthServiceABC = Depends(),
+    user_service: UserServiceABC = Depends(),
+) -> uuid.UUID:
+    if not oauth_code_req.code:
+        logger.warning(f"{oauth_code_req.error} - {oauth_code_req.error_description}")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    oauth_request_token = OAuthRequestTokenDto(
+        code=oauth_code_req.code, state=oauth_code_req.state,
+    )
+    token_dto: OAuthTokenDto = await yandex_oauth_service.fetch_token(
+        oauth_request_token,
+    )
+    user_info: OAuthUserInfoDto = await yandex_oauth_service.user_info(token_dto)
+    user_id: uuid.UUID = await user_service.get_or_create_user_from_oauth(user_info)
+    # FIXME: а что возвращать то?
+    return user_id
+
 
 # @router.get(
 #     '/tokens',
