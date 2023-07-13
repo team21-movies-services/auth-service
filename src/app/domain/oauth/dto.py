@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from domain.base.dto import BaseDTO
 from domain.oauth.yandex.response import OAuthUserInfoSchema, OAuthResponseTokenSchema
 from domain.oauth.vk.response import VKOAuthResponseUserInfoSchema
+from domain.oauth.google.response import GoogleOAuthResponseUserInfoSchema
 
 
 @dataclass
@@ -26,10 +27,26 @@ class OAuthUserInfoDto(BaseDTO):
         cls,
         response: VKOAuthResponseUserInfoSchema,
     ) -> "OAuthUserInfoDto":
+        if not response.first_name:
+            response.first_name = ""
+        if not response.last_name:
+            response.last_name = ""
+
         return OAuthUserInfoDto(
             email=response.email,
             first_name=response.first_name,
             last_name=response.last_name,
+        )
+
+    @classmethod
+    def from_google_response(
+        cls,
+        response: GoogleOAuthResponseUserInfoSchema,
+    ) -> "OAuthUserInfoDto":
+        return OAuthUserInfoDto(
+            email=response.email,
+            first_name=response.given_name,
+            last_name=response.family_name,
         )
 
 
