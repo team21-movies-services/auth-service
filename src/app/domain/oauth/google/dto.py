@@ -9,12 +9,12 @@ class AuthorizationUrlDto(BaseDTO):
     response_type: Literal["code"]
     client_id: str
     redirect_uri: str
-    scope: Literal["openid email"]
+    scope: Literal["openid email profile"]
     access_type: Literal["offline", "online"]
 
 
 @dataclass
-class AccessTokenUrlDto(BaseDTO):
+class AccessTokenDto(BaseDTO):
     client_id: str
     client_secret: str
     redirect_uri: str
@@ -23,7 +23,13 @@ class AccessTokenUrlDto(BaseDTO):
 
 
 @dataclass
-class UserInfoUrlDto(BaseDTO):
-    access_token: str
-    user_ids: int
-    v: str = "5.131"
+class RefreshTokenDto(BaseDTO):
+    client_id: str
+    client_secret: str
+    refresh_token: str
+    grant_type: Literal["refresh_token"]
+
+
+@dataclass
+class RevokeTokenUrlDto(BaseDTO):
+    token: str

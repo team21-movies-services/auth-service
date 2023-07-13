@@ -10,6 +10,14 @@ class GoogleOAuthResponseTokenSchema(BaseModel):
     token_type: str
 
 
+class GoogleOAuthResponseRefreshSchema(BaseModel):
+    access_token: str
+    expires_in: int
+    scope: str
+    token_type: str
+    refresh_token: str | None
+
+
 class GoogleOAuthResponseUserInfoSchema(BaseModel):
     email: EmailStr
     given_name: str | None

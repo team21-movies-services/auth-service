@@ -18,3 +18,5 @@ class VKOAuthEndpointEnum(str, Enum):
 class GoogleOAuthEndpointEnum(str, Enum):
     authorization_endpoint = "https://accounts.google.com/o/oauth2/v2/auth"
     token_endpoint = "https://oauth2.googleapis.com/token"
+    revoke_endpoint = "https://oauth2.googleapis.com/revoke"
+    refresh_endpoint = "https://oauth2.googleapis.com/token"

@@ -1,3 +1,4 @@
+import http
 import logging
 
 from fastapi import APIRouter, Depends, Request
@@ -7,6 +8,8 @@ from schemas.oauth import GoogleOAuthCodeRequestSchema
 from schemas.response.user import UserResponse
 from services import AuthServiceABC, UserServiceABC
 from services.oauth.google import GoogleOAuthServiceABC
+from dependencies.auth import get_auth_data
+from schemas.auth import AuthData
 
 router = APIRouter(prefix='/google', tags=['Авторизация через GOOGLE'])
 logger = logging.getLogger().getChild('oauth-actions')
@@ -15,7 +18,8 @@ logger = logging.getLogger().getChild('oauth-actions')
 @router.get(
     '/login',
     summary="Вход OAuth",
-    description="Авторизация пользователя через oauth google: https://developers.google.com/identity/openid-connect/openid-connect",
+    description=("Авторизация пользователя через oauth google: "
+                 "https://developers.google.com/identity/openid-connect/openid-connect"),
     response_class=RedirectResponse,
 )
 async def _google_login(request: Request, google_oauth: GoogleOAuthServiceABC = Depends()) -> RedirectResponse:
@@ -33,13 +37,47 @@ async def _google_login(request: Request, google_oauth: GoogleOAuthServiceABC = 
 async def _google_callback(
     request: Request,
     params: GoogleOAuthCodeRequestSchema = Depends(),
-    vk_oauth: GoogleOAuthServiceABC = Depends(),
+    google_oauth: GoogleOAuthServiceABC = Depends(),
     user_service: UserServiceABC = Depends(),
     auth_service: AuthServiceABC = Depends(),
 ) -> UserResponse:
     redirect_uri = request.url_for("_google_callback")
-    vk_access_info = await vk_oauth.fetch_access_token(str(redirect_uri), params.code)
-    user_info = await vk_oauth.fetch_user_info(vk_access_info)
+    access_info = await google_oauth.fetch_access_token(str(redirect_uri), params.code)
+    user_info = await google_oauth.fetch_user_info(access_info)
     user_response = await user_service.get_or_create_user_from_oauth(user_info)
     user_response.tokens = await auth_service.create_token_pair(user_response.id)
+    await google_oauth.add_access_token_to_cache(user_response.id, access_info.access_token, access_info.expires_in)
+    await google_oauth.add_refresh_token_to_cache(user_response.id, access_info.refresh_token, access_info.expires_in)
     return user_response
+
+
+@router.post(
+    '/revoke',
+    summary="Отозвать токен",
+    description=("Отозвать access token google oauth: "
+                 "https://developers.google.com/identity/protocols/oauth2/web-server#tokenrevoke"),
+    status_code=http.HTTPStatus.OK,
+)
+async def _google_revoke(
+    auth_data: AuthData = Depends(get_auth_data),
+    google_oauth: GoogleOAuthServiceABC = Depends(),
+) -> None:
+    await google_oauth.revoke_token(auth_data.user_id)
+    await google_oauth.remove_access_token_from_cache(auth_data.user_id)
+    await google_oauth.remove_refresh_token_from_cache(auth_data.user_id)
+
+
+@router.post(
+    '/refresh',
+    summary="Обновить токен",
+    description=("Обновить access token google oauth: "
+                 "https://developers.google.com/identity/protocols/oauth2/web-server#offline"),
+    status_code=http.HTTPStatus.OK,
+)
+async def _google_refresh(
+    auth_data: AuthData = Depends(get_auth_data),
+    google_oauth: GoogleOAuthServiceABC = Depends(),
+) -> None:
+    access_info = await google_oauth.refresh_token(auth_data.user_id)
+    await google_oauth.add_access_token_to_cache(auth_data.user_id, access_info.access_token, access_info.expires_in)
+    await google_oauth.set_refresh_token_cache_expire(auth_data.user_id, access_info.expires_in)
