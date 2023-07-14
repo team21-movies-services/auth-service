@@ -1,6 +1,7 @@
-from httpx import AsyncClient
 from http import HTTPStatus
+
 import pytest
+from httpx import AsyncClient
 
 pytestmark = pytest.mark.asyncio
 

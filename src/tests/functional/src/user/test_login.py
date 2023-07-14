@@ -1,8 +1,9 @@
+from http import HTTPStatus
+
 import pytest
 from httpx import AsyncClient
-from http import HTTPStatus
-from passlib.context import CryptContext
 from models import AuthUser
+from passlib.context import CryptContext
 
 pytestmark = pytest.mark.asyncio
 pwd_context = CryptContext(schemes=["bcrypt"])

@@ -1,9 +1,7 @@
 from fastapi import FastAPI
-
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
-
 from providers import BaseProvider
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 
 class SQLAlchemyProvider(BaseProvider):

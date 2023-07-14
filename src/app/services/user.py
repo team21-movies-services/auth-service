@@ -3,22 +3,17 @@ import logging
 import uuid
 from abc import ABC, abstractmethod
 
-from passlib.context import CryptContext
-
 from common.exceptions.user import UserException
+from domain.oauth.dto import OAuthUserInfoDto
+from passlib.context import CryptContext
 from repositories import UserRepository
-
 from schemas.request.user import (
     UserChangeInfoSchema,
-    UserRegistrationSchema,
-    UserLoginSchema,
     UserChangePasswordSchema,
+    UserLoginSchema,
+    UserRegistrationSchema,
 )
 from schemas.response.user import UserResponse
-
-
-from domain.oauth.dto import OAuthUserInfoDto
-
 
 pwd_context = CryptContext(schemes=["bcrypt"])
 logger = logging.getLogger(__name__)

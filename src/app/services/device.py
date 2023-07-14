@@ -1,10 +1,9 @@
 from uuid import UUID
 
-from fastapi import Header, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from dependencies.common import get_session
+from fastapi import Depends, Header
 from repositories import DeviceRepository
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class DeviceService:

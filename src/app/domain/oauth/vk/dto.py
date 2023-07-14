@@ -1,6 +1,6 @@
+from dataclasses import dataclass
 from typing import Literal
 
-from dataclasses import dataclass
 from domain.base.dto import BaseDTO
 
 

@@ -1,5 +1,5 @@
-from starlette.middleware.base import BaseHTTPMiddleware
 from opentelemetry.trace import get_current_span
+from starlette.middleware.base import BaseHTTPMiddleware
 
 
 class TracerRequestIdMiddleware(BaseHTTPMiddleware):

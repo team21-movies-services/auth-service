@@ -3,8 +3,6 @@ from abc import ABC, abstractmethod
 from uuid import UUID
 
 import jwt
-from pydantic import ValidationError
-
 from common.exceptions.auth import OAuthTokenExpiredException
 from common.exceptions.base import OAuthRequestError
 from core.oauth_config import GoogleOAuthConfig
@@ -16,11 +14,12 @@ from domain.oauth.google.dto import (
     RevokeTokenUrlDto,
 )
 from domain.oauth.google.response import (
+    GoogleOAuthPairTokensResponseSchema,
     GoogleOAuthResponseRefreshSchema,
     GoogleOAuthResponseTokenSchema,
     GoogleOAuthResponseUserInfoSchema,
-    GoogleOAuthPairTokensResponseSchema,
 )
+from pydantic import ValidationError
 from services.oauth.enums import GoogleOAuthEndpointEnum
 from utils.common import append_query_params_to_url
 from wrappers.cache.base import CacheServiceABC

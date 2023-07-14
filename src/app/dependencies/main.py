@@ -1,9 +1,8 @@
-from typing import Dict, Callable, Optional, Any
-from fastapi import FastAPI
+import logging
+from typing import Any, Callable, Dict, Optional
 
 from dependencies.mapping import dependencies_map
-
-import logging
+from fastapi import FastAPI
 
 logger = logging.getLogger(__name__)
 

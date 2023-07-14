@@ -1,19 +1,20 @@
 import logging
 from abc import ABC, abstractmethod
 
-from wrappers.cache.base import CacheServiceABC
-
-from core.oauth_config import VKOAuthConfig
-from services.oauth.enums import VKOAuthEndpointEnum
-from wrappers.http import AsyncHTTPClientABC
-from utils.common import append_query_params_to_url
-
-from domain.oauth.vk.dto import AuthorizationUrlDto, AccessTokenUrlDto, UserInfoUrlDto
-from domain.oauth.dto import OAuthUserInfoDto
-from domain.oauth.vk.response import VKOAuthResponseTokenSchema, VKOAuthResponseUserInfoSchema
-from wrappers.http.exceptions import ClientErrorException
-from pydantic import ValidationError
 from common.exceptions.base import OAuthRequestError
+from core.oauth_config import VKOAuthConfig
+from domain.oauth.dto import OAuthUserInfoDto
+from domain.oauth.vk.dto import AccessTokenUrlDto, AuthorizationUrlDto, UserInfoUrlDto
+from domain.oauth.vk.response import (
+    VKOAuthResponseTokenSchema,
+    VKOAuthResponseUserInfoSchema,
+)
+from pydantic import ValidationError
+from services.oauth.enums import VKOAuthEndpointEnum
+from utils.common import append_query_params_to_url
+from wrappers.cache.base import CacheServiceABC
+from wrappers.http import AsyncHTTPClientABC
+from wrappers.http.exceptions import ClientErrorException
 
 logger = logging.getLogger(__name__)
 

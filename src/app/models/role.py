@@ -1,15 +1,10 @@
 from typing import List
-from sqlalchemy import (
-    Text,
-    String,
-    PrimaryKeyConstraint,
-    UniqueConstraint,
-)
-from sqlalchemy.orm import Mapped, relationship
 
 from models import AuthUser
 from models.base import BaseModel, Column
 from models.mixins import IdMixin
+from sqlalchemy import PrimaryKeyConstraint, String, Text, UniqueConstraint
+from sqlalchemy.orm import Mapped, relationship
 
 
 class AuthRole(BaseModel, IdMixin):

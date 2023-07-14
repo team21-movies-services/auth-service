@@ -1,23 +1,21 @@
 import logging
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status, Header
-
+from common.exceptions import UserException
+from dependencies.auth import get_auth_data
 from dependencies.common import get_rate_limit
-from utils.rate_limit import RateLimiter
-
+from fastapi import APIRouter, Depends, Header, HTTPException, status
 from models.history import ActionType
+from schemas.auth import AuthData
 from schemas.request.info import HistoryRequest
 from schemas.request.user import UserChangeInfoSchema
 from schemas.response.info import HistoryResponse
 from schemas.response.role import RoleResponse
 from schemas.response.user import UserResponse
-from schemas.auth import AuthData
 from services import UserServiceABC
-from common.exceptions import UserException
 from services.history import HistoryServiceABC
-from dependencies.auth import get_auth_data
 from services.role import RoleServiceABC
+from utils.rate_limit import RateLimiter
 
 router = APIRouter(prefix='/user/info', tags=['Пользовательские данные'])
 

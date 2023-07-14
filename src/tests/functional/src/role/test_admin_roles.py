@@ -1,10 +1,9 @@
 import json
+from http import HTTPStatus
 from typing import List
 
-from httpx import AsyncClient
-from http import HTTPStatus
 import pytest
-
+from httpx import AsyncClient
 from models import AuthRole, AuthUser
 from repositories import RoleRepository
 

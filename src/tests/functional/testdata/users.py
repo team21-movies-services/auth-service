@@ -1,5 +1,5 @@
-from faker import Faker
 import pytest_asyncio
+from faker import Faker
 from faker.providers import profile
 
 fake = Faker('ru_RU')

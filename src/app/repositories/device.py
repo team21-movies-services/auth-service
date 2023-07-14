@@ -1,6 +1,7 @@
 import logging
-from repositories.base import SQLAlchemyRepository
+
 from models.device import AuthDevice
+from repositories.base import SQLAlchemyRepository
 
 logger = logging.getLogger(__name__)
 

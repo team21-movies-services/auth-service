@@ -1,7 +1,6 @@
 from sqlalchemy import MetaData
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.types import TypeDecorator, String
+from sqlalchemy.orm import declarative_base, mapped_column
+from sqlalchemy.types import String, TypeDecorator
 
 Column = mapped_column
 

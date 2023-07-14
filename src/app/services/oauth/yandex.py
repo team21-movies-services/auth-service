@@ -1,36 +1,30 @@
-from uuid import UUID
 import logging
+from abc import ABC, abstractmethod
+from uuid import UUID
 
 from common.exceptions.auth import OAuthTokenExpiredException
-from pydantic import ValidationError
-
-from abc import ABC, abstractmethod
 from common.exceptions.base import OAuthRequestError
-
-from wrappers.cache.base import CacheServiceABC
-
 from core.oauth_config import YandexOAuthConfig
-from services.oauth.enums import YandexOAuthEndpointEnum
-from wrappers.http import AsyncHTTPClientABC
-from wrappers.http.exceptions import ClientErrorException
-
-from utils.common import append_query_params_to_url
-
 from domain.oauth.dto import OAuthTokenDto, OAuthUserInfoDto
 from domain.oauth.yandex.dto import (
     AuthorizationUrlDto,
+    CacheTokensDto,
     OAuthRequestTokenDto,
     RefreshTokenDto,
-    CacheTokensDto,
     RevokeTokenDto,
 )
-
 from domain.oauth.yandex.request import OAuthRequestTokenSchema
 from domain.oauth.yandex.response import (
+    OAuthResponseRefreshSchema,
     OAuthResponseTokenSchema,
     OAuthUserInfoSchema,
-    OAuthResponseRefreshSchema,
 )
+from pydantic import ValidationError
+from services.oauth.enums import YandexOAuthEndpointEnum
+from utils.common import append_query_params_to_url
+from wrappers.cache.base import CacheServiceABC
+from wrappers.http import AsyncHTTPClientABC
+from wrappers.http.exceptions import ClientErrorException
 
 logger = logging.getLogger(__name__)
 

@@ -1,11 +1,9 @@
-from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from dependencies.registrator import add_factory_to_mapper
 from dependencies.common import get_session
-from services.user import UserServiceABC, UserService
-
+from dependencies.registrator import add_factory_to_mapper
+from fastapi import Depends
 from repositories import UserRepository
+from services.user import UserService, UserServiceABC
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @add_factory_to_mapper(UserServiceABC)

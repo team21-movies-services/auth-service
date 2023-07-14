@@ -1,30 +1,22 @@
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, status, Header
-from fastapi.responses import Response
-
-from common.exceptions import UserException, UserAlreadyExists, AuthException
 from common.enums import RateLimitPeriodEnum
-
-from dependencies.common import get_rate_limit
-from utils.rate_limit import RateLimiter
-
+from common.exceptions import AuthException, UserAlreadyExists, UserException
 from dependencies.auth import get_auth_data, get_refresh_data
-from schemas.auth import AuthData, RefreshData
+from dependencies.common import get_rate_limit
+from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi.responses import Response
 from models.history import ActionType
-
+from schemas.auth import AuthData, RefreshData
 from schemas.request.user import (
-    UserRegistrationSchema,
-    UserLoginSchema,
     UserChangePasswordSchema,
+    UserLoginSchema,
+    UserRegistrationSchema,
 )
 from schemas.response.token import TokensResponse
 from schemas.response.user import UserResponse
-from services import (
-    UserServiceABC,
-    AuthServiceABC,
-    HistoryServiceABC,
-)
+from services import AuthServiceABC, HistoryServiceABC, UserServiceABC
+from utils.rate_limit import RateLimiter
 
 router = APIRouter(prefix="/user", tags=["Регистрационные действия"])
 

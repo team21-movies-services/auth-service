@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
 
-from pydantic.main import BaseModel
 from models.history import ActionType
+from pydantic.main import BaseModel
 
 
 class DeviceResponse(BaseModel):

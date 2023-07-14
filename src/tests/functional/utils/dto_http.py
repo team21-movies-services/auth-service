@@ -1,9 +1,8 @@
 import enum
 from dataclasses import dataclass
-
 from http import HTTPStatus
+from typing import Dict, List, Optional
 
-from typing import Optional, List, Dict
 from multidict import CIMultiDictProxy
 
 

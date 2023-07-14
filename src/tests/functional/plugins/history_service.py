@@ -1,10 +1,10 @@
 from random import SystemRandom
 from typing import List
-import pytest_asyncio
 
+import pytest_asyncio
 from models import AuthUser
-from models.history import AuthHistory, ActionType
-from repositories import HistoryRepository, DeviceRepository
+from models.history import ActionType, AuthHistory
+from repositories import DeviceRepository, HistoryRepository
 
 
 @pytest_asyncio.fixture(scope='session')

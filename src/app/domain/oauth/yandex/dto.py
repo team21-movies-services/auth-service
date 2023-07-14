@@ -1,7 +1,7 @@
-from typing import Optional, Literal
+from dataclasses import dataclass
+from typing import Literal, Optional
 from uuid import UUID
 
-from dataclasses import dataclass
 from domain.base.dto import BaseDTO
 
 

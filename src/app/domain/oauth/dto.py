@@ -1,8 +1,9 @@
 from dataclasses import dataclass
+
 from domain.base.dto import BaseDTO
-from domain.oauth.yandex.response import OAuthUserInfoSchema, OAuthResponseTokenSchema
-from domain.oauth.vk.response import VKOAuthResponseUserInfoSchema
 from domain.oauth.google.response import GoogleOAuthResponseUserInfoSchema
+from domain.oauth.vk.response import VKOAuthResponseUserInfoSchema
+from domain.oauth.yandex.response import OAuthResponseTokenSchema, OAuthUserInfoSchema
 
 
 @dataclass

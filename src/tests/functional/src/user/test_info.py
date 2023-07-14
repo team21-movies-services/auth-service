@@ -1,11 +1,10 @@
 import json
+from http import HTTPStatus
 from typing import List
 
-from httpx import AsyncClient
-from http import HTTPStatus
 import pytest
-
 from functional.testdata.users import fake_user_info
+from httpx import AsyncClient
 from models import AuthRole
 from models.history import AuthHistory
 

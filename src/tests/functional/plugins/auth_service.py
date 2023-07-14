@@ -1,9 +1,8 @@
 import pytest_asyncio
-
-from wrappers.cache.redis import RedisCacheService
 from functional.settings import Settings
 from models import AuthUser
 from services.auth import AuthService
+from wrappers.cache.redis import RedisCacheService
 
 
 @pytest_asyncio.fixture(scope='session')

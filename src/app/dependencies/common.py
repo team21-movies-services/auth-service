@@ -1,11 +1,9 @@
-from fastapi import FastAPI, Request, Depends
-
 from typing import AsyncGenerator
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from redis.asyncio import Redis
-
 from core.config import Settings
+from fastapi import Depends, FastAPI, Request
+from redis.asyncio import Redis
+from sqlalchemy.ext.asyncio import AsyncSession
 from utils.rate_limit import RateLimiter
 from wrappers.cache import RedisCacheService
 

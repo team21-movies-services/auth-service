@@ -1,13 +1,12 @@
 import logging
 from typing import Optional
-from fastapi import HTTPException, Security, status, Depends
-from fastapi.security import APIKeyHeader
 
-from services import AuthServiceABC
-from schemas.auth import AuthData, RefreshData
 from common.exceptions.auth import TokenException, TokenExpiredException
-
+from fastapi import Depends, HTTPException, Security, status
+from fastapi.security import APIKeyHeader
+from schemas.auth import AuthData, RefreshData
 from schemas.request.token import RefreshSchema
+from services import AuthServiceABC
 
 api_key_header = APIKeyHeader(name="Authorization", auto_error=False)
 

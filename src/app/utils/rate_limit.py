@@ -2,8 +2,8 @@ import logging
 from typing import Optional
 
 from common.enums import RateLimitPeriodEnum
-from wrappers.cache.base import CacheServiceABC
 from common.exceptions.base import TooManyRequests
+from wrappers.cache.base import CacheServiceABC
 
 logger = logging.getLogger(__name__)
 

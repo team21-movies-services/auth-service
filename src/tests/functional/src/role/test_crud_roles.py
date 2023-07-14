@@ -1,11 +1,10 @@
 import json
+from http import HTTPStatus
 from typing import List
 
-from httpx import AsyncClient
-from http import HTTPStatus
 import pytest
-
 from functional.testdata.roles import fake_role
+from httpx import AsyncClient
 from models import AuthRole
 
 pytestmark = pytest.mark.asyncio

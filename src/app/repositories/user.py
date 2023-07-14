@@ -1,13 +1,10 @@
 import logging
-
 from typing import Optional
 
-from sqlalchemy.exc import IntegrityError
-
 from common.exceptions.user import UserAlreadyExists, UserNotExists
-
-from repositories.base import SQLAlchemyRepository
 from models.user import AuthUser
+from repositories.base import SQLAlchemyRepository
+from sqlalchemy.exc import IntegrityError
 
 logger = logging.getLogger(__name__)
 

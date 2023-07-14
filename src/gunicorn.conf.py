@@ -1,8 +1,8 @@
 # file gunicorn.conf.py
 # coding=utf-8
 
-import os
 import multiprocessing
+import os
 
 loglevel = os.environ.get('GUNICORN_LOG_LEVEL', 'info')
 errorlog = "-"

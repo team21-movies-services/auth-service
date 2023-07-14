@@ -1,7 +1,6 @@
 from typing import List
 
 import pytest_asyncio
-
 from functional.testdata.roles import fake_role
 from models import AuthRole, AuthUser
 from repositories.role import RoleRepository
