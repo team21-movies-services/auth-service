@@ -22,7 +22,6 @@ def _setup_tracer(settings: Settings) -> TracerProvider:
 
 
 def setup_telemetry(app: FastAPI, settings: Settings):
-
     tracer = _setup_tracer(settings)
     logger.info(f"Init main Tracer Provider - service name: {settings.project.name}")
 

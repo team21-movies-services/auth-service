@@ -26,7 +26,8 @@ class AuthRole(BaseModel, IdMixin):
     description: Mapped[str] = Column(Text(), nullable=True)
 
     users: Mapped[List[AuthUser]] = relationship(
-        'AuthUser', secondary='auth.user_role',
+        'AuthUser',
+        secondary='auth.user_role',
     )
 
     def __repr__(self):

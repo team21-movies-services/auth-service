@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Literal
 from uuid import UUID
 
 from dataclasses import dataclass
@@ -17,3 +17,26 @@ class AuthorizationUrlDto(BaseDTO):
 class OAuthRequestTokenDto(BaseDTO):
     code: int
     state: Optional[str] = None  # FIXME: check from enum
+
+
+@dataclass
+class CacheTokensDto(BaseDTO):
+    user_id: UUID
+    access_token: str
+    refresh_token: str
+    expired: int
+
+
+@dataclass
+class RefreshTokenDto(BaseDTO):
+    client_id: str
+    client_secret: str
+    refresh_token: str
+    grant_type: Literal["refresh_token"]
+
+
+@dataclass
+class RevokeTokenDto(BaseDTO):
+    client_id: str
+    client_secret: str
+    access_token: str

@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from .yandex import router as yandex_router
-from .vk import router as vk_router
 from .google import router as google_router
+from .vk import router as vk_router
+from .yandex import router as yandex_router
 
 router = APIRouter(prefix="/oauth")
 

@@ -31,7 +31,6 @@ logger = logging.getLogger(__name__)
 
 
 class GoogleOAuthServiceABC(ABC):
-
     @abstractmethod
     def create_authorization_url(self, redirect_uri: str) -> str:
         raise NotImplementedError
@@ -71,7 +70,7 @@ class GoogleOAuthServiceABC(ABC):
     @abstractmethod
     async def refresh_token(self, user_id: UUID) -> GoogleOAuthResponseRefreshSchema:
         raise NotImplementedError
-    
+
     @abstractmethod
     async def get_tokens_pair(self, user_id: UUID) -> GoogleOAuthPairTokensResponseSchema:
         raise NotImplementedError
@@ -99,7 +98,6 @@ class GoogleOAuthService(GoogleOAuthServiceABC):
         return append_query_params_to_url(GoogleOAuthEndpointEnum.authorization_endpoint, auth_url_dto.as_dict())
 
     def _create_access_token_data(self, redirect_uri: str, code: str) -> AccessTokenDto:
-
         access_url_dto = AccessTokenDto(
             client_id=self._config.client_id,
             client_secret=self._config.client_secret,
@@ -110,7 +108,6 @@ class GoogleOAuthService(GoogleOAuthServiceABC):
         return access_url_dto
 
     def _create_refresh_token_data(self, refresh_token: str) -> RefreshTokenDto:
-
         refresh_url_dto = RefreshTokenDto(
             client_id=self._config.client_id,
             client_secret=self._config.client_secret,
@@ -127,7 +124,8 @@ class GoogleOAuthService(GoogleOAuthServiceABC):
         access_token_data = self._create_access_token_data(redirect_uri, code)
         try:
             response = await self._http_client.post(
-                GoogleOAuthEndpointEnum.token_endpoint, data=access_token_data.as_dict()
+                GoogleOAuthEndpointEnum.token_endpoint,
+                data=access_token_data.as_dict(),
             )
             response_token = GoogleOAuthResponseTokenSchema(**response)
         except (ValidationError, ClientErrorException) as error:
@@ -190,7 +188,8 @@ class GoogleOAuthService(GoogleOAuthServiceABC):
         try:
             refresh_token_data = self._create_refresh_token_data(refresh_token)
             response = await self._http_client.post(
-                GoogleOAuthEndpointEnum.refresh_endpoint, data=refresh_token_data.as_dict(),
+                GoogleOAuthEndpointEnum.refresh_endpoint,
+                data=refresh_token_data.as_dict(),
             )
             response_refresh = GoogleOAuthResponseRefreshSchema(**response)
         except (ValidationError, ClientErrorException) as error:

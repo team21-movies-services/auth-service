@@ -15,8 +15,7 @@ logger = logging.getLogger(__name__)
 class UserRepository(SQLAlchemyRepository):
     model = AuthUser
 
-    async def get_user_by_field(self, raise_if_notfound: bool = True,
-                                **fields) -> Optional[AuthUser]:
+    async def get_user_by_field(self, raise_if_notfound: bool = True, **fields) -> Optional[AuthUser]:
         """Получение записи пользователя по полю если оно существует"""
 
         result = await self.get_by(**fields)

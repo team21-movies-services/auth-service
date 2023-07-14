@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 class VKOAuthServiceABC(ABC):
-
     @abstractmethod
     def create_authorization_url(self, redirect_uri: str) -> str:
         raise NotImplementedError
@@ -55,7 +54,6 @@ class VKOAuthService(VKOAuthServiceABC):
         return append_query_params_to_url(VKOAuthEndpointEnum.authorization_endpoint, auth_url_dto.as_dict())
 
     def _create_access_token_url(self, redirect_uri: str, code: str) -> str:
-
         access_url_dto = AccessTokenUrlDto(
             client_id=self.config.client_id,
             client_secret=self.config.client_secret,

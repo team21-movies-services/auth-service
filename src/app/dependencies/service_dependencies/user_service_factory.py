@@ -10,7 +10,7 @@ from repositories import UserRepository
 
 @add_factory_to_mapper(UserServiceABC)
 def create_user_service(
-        session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_session),
 ):
     return UserService(
         UserRepository(session=session),

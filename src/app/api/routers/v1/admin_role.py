@@ -17,9 +17,9 @@ logger = logging.getLogger().getChild('admin-role-actions')
     dependencies=[Depends(get_auth_admin)],
 )
 async def _add_role_to_user(
-        user_id: uuid.UUID,
-        role_ids: List[uuid.UUID],
-        role_service: RoleServiceABC = Depends(),
+    user_id: uuid.UUID,
+    role_ids: List[uuid.UUID],
+    role_service: RoleServiceABC = Depends(),
 ):
     logger.debug(f'Add roles to user: user_id - {user_id}, roles - {role_ids}')
     try:
@@ -35,9 +35,9 @@ async def _add_role_to_user(
     dependencies=[Depends(get_auth_admin)],
 )
 async def _delete_role_to_user(
-        user_id: uuid.UUID,
-        role_ids: List[uuid.UUID],
-        role_service: RoleServiceABC = Depends(),
+    user_id: uuid.UUID,
+    role_ids: List[uuid.UUID],
+    role_service: RoleServiceABC = Depends(),
 ):
     logger.debug(f'Remove roles to user: user_id - {user_id}, roles - {role_ids}')
     try:
@@ -52,8 +52,8 @@ async def _delete_role_to_user(
     dependencies=[Depends(get_auth_admin)],
 )
 async def _get_role_to_user(
-        user_id: uuid.UUID,
-        role_service: RoleServiceABC = Depends(),
+    user_id: uuid.UUID,
+    role_service: RoleServiceABC = Depends(),
 ):
     logger.debug(f'View roles to user: user_id - {user_id}')
     try:

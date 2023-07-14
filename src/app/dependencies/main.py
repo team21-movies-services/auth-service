@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from dependencies.mapping import dependencies_map
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 

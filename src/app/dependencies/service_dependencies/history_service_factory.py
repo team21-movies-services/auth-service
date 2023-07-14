@@ -10,7 +10,7 @@ from repositories import HistoryRepository, DeviceRepository
 
 @add_factory_to_mapper(HistoryServiceABC)
 def create_history_service(
-        session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_session),
 ):
     return HistoryService(
         HistoryRepository(session=session),

@@ -25,7 +25,7 @@ logger = logging.getLogger().getChild('crud-role-actions')
     dependencies=[Depends(get_auth_admin)],
 )
 async def _role_list(
-        role_service: RoleServiceABC = Depends(),
+    role_service: RoleServiceABC = Depends(),
 ) -> List[RoleResponse]:
     logger.debug('View roles')
     return await role_service.get_roles()
@@ -39,8 +39,8 @@ async def _role_list(
     status_code=status.HTTP_201_CREATED,
 )
 async def _create_role(
-        role_request: RoleRequest,
-        role_service: RoleServiceABC = Depends(),
+    role_request: RoleRequest,
+    role_service: RoleServiceABC = Depends(),
 ) -> RoleResponse:
     logger.debug(f'New role: {role_request.dict()}')
     try:
@@ -58,8 +58,8 @@ async def _create_role(
     dependencies=[Depends(get_auth_admin)],
 )
 async def _delete_role(
-        role_id: uuid.UUID,
-        role_service: RoleServiceABC = Depends(),
+    role_id: uuid.UUID,
+    role_service: RoleServiceABC = Depends(),
 ):
     logger.debug(f'Delete role: role_id - {role_id}')
     try:
@@ -75,9 +75,9 @@ async def _delete_role(
     dependencies=[Depends(get_auth_admin)],
 )
 async def _update_role(
-        role_id: uuid.UUID,
-        role_request: RoleRequest,
-        role_service: RoleServiceABC = Depends(),
+    role_id: uuid.UUID,
+    role_request: RoleRequest,
+    role_service: RoleServiceABC = Depends(),
 ) -> RoleResponse:
     logger.debug(f'Change role: role_id - {role_id}, {role_request.dict()}')
     try:

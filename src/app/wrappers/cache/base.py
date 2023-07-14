@@ -13,7 +13,11 @@ class CacheServiceABC(ABC):
 
     @abstractmethod
     async def put_to_cache(
-        self, key: str, value: Union[str, bytes], expire: int, **kwargs,
+        self,
+        key: str,
+        value: Union[str, bytes],
+        expire: int,
+        **kwargs,
     ) -> None:
         raise NotImplementedError
 

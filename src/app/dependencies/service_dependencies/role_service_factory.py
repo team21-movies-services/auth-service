@@ -10,7 +10,7 @@ from repositories import RoleRepository
 
 @add_factory_to_mapper(RoleServiceABC)
 def create_role_service(
-        session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_session),
 ):
     return RoleService(
         RoleRepository(session=session),

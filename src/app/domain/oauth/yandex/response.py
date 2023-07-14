@@ -13,3 +13,10 @@ class OAuthUserInfoSchema(BaseModel):
     first_name: str
     last_name: str
     emails: list[str]
+
+
+class OAuthResponseRefreshSchema(BaseModel):
+    access_token: str
+    expires_in: int
+    token_type: str
+    refresh_token: str

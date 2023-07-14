@@ -6,6 +6,13 @@ authors = ["Орлов Ярослав <orlov.avis@yandex.ru>"]
 readme = "README.md"
 packages = [{include = "auth_service"}]
 
+[tool.black]
+line-length = 120
+skip-string-normalization = true
+
+[tool.isort]
+profile = "black"
+
 [tool.poetry.dependencies]
 python = "^3.10"
 fastapi = "0.95.1"
@@ -43,6 +50,8 @@ pre-commit = "3.3.3"
 flake8-pytest = "1.4"
 flake8-pytest-style = "1.7.2"
 types-redis = "^4.6.0.1"
+black = "^23.7.0"
+isort = "^5.12.0"
 
 
 [tool.poetry.group.test.dependencies]

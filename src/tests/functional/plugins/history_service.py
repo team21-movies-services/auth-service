@@ -23,13 +23,12 @@ async def device(device_repository: DeviceRepository, fake_user_agent):
 
 
 @pytest_asyncio.fixture()
-async def user_history(request, auth_user: AuthUser,
-                       db_session,
-                       device) -> List[AuthHistory]:
+async def user_history(request, auth_user: AuthUser, db_session, device) -> List[AuthHistory]:
     cryptogen = SystemRandom()
-    history_db = [AuthHistory(user_id=auth_user.id,
-                              device_id=device.id,
-                              action_type=cryptogen.choice(list(ActionType))) for _ in range(request.param)]
+    history_db = [
+        AuthHistory(user_id=auth_user.id, device_id=device.id, action_type=cryptogen.choice(list(ActionType)))
+        for _ in range(request.param)
+    ]
     db_session.add_all(history_db)
     await db_session.commit()
     return history_db

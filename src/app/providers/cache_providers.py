@@ -9,8 +9,10 @@ from opentelemetry.instrumentation.redis import RedisInstrumentor
 
 class RedisProvider(BaseProvider):
     def __init__(
-        self, app: FastAPI,
-        host: str, port: int,
+        self,
+        app: FastAPI,
+        host: str,
+        port: int,
     ):
         self.app = app
         self.host = host

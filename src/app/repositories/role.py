@@ -20,11 +20,7 @@ class RoleRepository(SQLAlchemyRepository):
         return result.scalars().all()
 
     async def get_roles_by_user(self, user_id: uuid.UUID):
-        stmt = (
-            select(self.model)
-            .join(self.model.users)
-            .where(AuthUser.id == user_id)
-        )
+        stmt = select(self.model).join(self.model.users).where(AuthUser.id == user_id)
         result = await self.session.execute(stmt)
         return result.scalars().all()
 
@@ -47,10 +43,6 @@ class RoleRepository(SQLAlchemyRepository):
             raise RoleAlreadyExists()
 
     async def delete_roles_by_user(self, user_id: uuid.UUID, role_ids: List[uuid.UUID]):
-        stmt = (
-            delete(AuthUserRole)
-            .where(AuthUserRole.role_id.in_(role_ids))
-            .where(AuthUserRole.user_id == user_id)
-        )
+        stmt = delete(AuthUserRole).where(AuthUserRole.role_id.in_(role_ids)).where(AuthUserRole.user_id == user_id)
         await self.session.execute(stmt)
         await self.session.commit()

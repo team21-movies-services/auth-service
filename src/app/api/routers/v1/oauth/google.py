@@ -1,16 +1,15 @@
 import http
 import logging
 
+from dependencies.auth import get_auth_data
+from domain.oauth.google.response import GoogleOAuthPairTokensResponseSchema
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import RedirectResponse
-
+from schemas.auth import AuthData
 from schemas.oauth import GoogleOAuthCodeRequestSchema
 from schemas.response.user import UserResponse
 from services import AuthServiceABC, UserServiceABC
 from services.oauth.google import GoogleOAuthServiceABC
-from dependencies.auth import get_auth_data
-from schemas.auth import AuthData
-from domain.oauth.google.response import GoogleOAuthPairTokensResponseSchema
 
 router = APIRouter(prefix='/google', tags=['Авторизация через GOOGLE'])
 logger = logging.getLogger().getChild('oauth-actions')
@@ -19,8 +18,10 @@ logger = logging.getLogger().getChild('oauth-actions')
 @router.get(
     '/login',
     summary="Вход OAuth",
-    description=("Авторизация пользователя через oauth google: "
-                 "https://developers.google.com/identity/openid-connect/openid-connect"),
+    description=(
+        "Авторизация пользователя через oauth google: "
+        "https://developers.google.com/identity/openid-connect/openid-connect"
+    ),
     response_class=RedirectResponse,
 )
 async def _google_login(request: Request, google_oauth: GoogleOAuthServiceABC = Depends()) -> RedirectResponse:
@@ -55,8 +56,10 @@ async def _google_callback(
 @router.post(
     '/revoke',
     summary="Отозвать токен",
-    description=("Отозвать access token google oauth: "
-                 "https://developers.google.com/identity/protocols/oauth2/web-server#tokenrevoke"),
+    description=(
+        "Отозвать access token google oauth: "
+        "https://developers.google.com/identity/protocols/oauth2/web-server#tokenrevoke"
+    ),
     status_code=http.HTTPStatus.OK,
 )
 async def _google_revoke(
@@ -71,8 +74,10 @@ async def _google_revoke(
 @router.post(
     '/refresh',
     summary="Обновить токен",
-    description=("Обновить access token google oauth: "
-                 "https://developers.google.com/identity/protocols/oauth2/web-server#offline"),
+    description=(
+        "Обновить access token google oauth: "
+        "https://developers.google.com/identity/protocols/oauth2/web-server#offline"
+    ),
     status_code=http.HTTPStatus.OK,
 )
 async def _google_refresh(

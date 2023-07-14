@@ -23,12 +23,14 @@ class AsyncHTTPClient(AsyncHTTPClientABC):
         data: Optional[dict] = None,
     ) -> Any:
         response = await self.httpx_client.request(
-            method, url, headers=headers, params=params, data=data,
+            method,
+            url,
+            headers=headers,
+            params=params,
+            data=data,
         )
         if response.status_code != codes.OK:
-            raise ClientErrorException(
-                f"Error send post request. detail={response.content}",
-            )
+            raise ClientErrorException(f"Error send post request. detail={response.content!r}")
         return response.json()
 
     async def get(
@@ -38,7 +40,10 @@ class AsyncHTTPClient(AsyncHTTPClientABC):
         headers: Optional[dict] = None,
     ) -> Any:
         return await self._request(
-            method="GET", url=path, headers=headers, params=params,
+            method="GET",
+            url=path,
+            headers=headers,
+            params=params,
         )
 
     async def post(
@@ -49,5 +54,9 @@ class AsyncHTTPClient(AsyncHTTPClientABC):
         params: Optional[dict] = None,
     ) -> Any:
         return await self._request(
-            method="POST", url=path, headers=headers, data=data, params=params,
+            method="POST",
+            url=path,
+            headers=headers,
+            data=data,
+            params=params,
         )

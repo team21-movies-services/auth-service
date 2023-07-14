@@ -31,11 +31,13 @@ class AuthHistory(BaseModel, IdMixin, TsMixinCreated):
         PrimaryKeyConstraint('id', name='auth_history_pkey'),
         # Index("history_user_id_action_id_device_id_uniq", 'user_id', 'action_type', 'device_id', unique=True),
         ForeignKeyConstraint(
-            ['user_id'], ['auth.user.id'],
+            ['user_id'],
+            ['auth.user.id'],
             name='user_id__fk',
         ),
         ForeignKeyConstraint(
-            ['device_id'], ['auth.device.id'],
+            ['device_id'],
+            ['auth.device.id'],
             name='device_id__fk',
         ),
         {"schema": "auth"},

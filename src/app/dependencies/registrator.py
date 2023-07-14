@@ -5,6 +5,7 @@ _mapper = {}
 
 def add_factory_to_mapper(class_: Union[Type, Callable]):
     """Декоратор переопределения классов фабрик."""
+
     def _add_factory_to_mapper(func: Callable):
         _mapper[class_] = func
 

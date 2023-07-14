@@ -28,4 +28,8 @@ jobs:
       run: poetry install --no-root --only dev || true
 
     - name: "Запуск линтеров"
-      run: poetry run flake8 ./src
+      run: |
+        poetry run flake8 ./src
+        poetry run mypy ./src
+        poetry run black --check ./src
+        poetry run isort --check ./src

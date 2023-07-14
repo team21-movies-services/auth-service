@@ -14,7 +14,7 @@ class OAuthUserInfoDto(BaseDTO):
     @classmethod
     def from_yandex_response(
         cls,
-        response: OAuthUserInfoSchema
+        response: OAuthUserInfoSchema,
     ) -> "OAuthUserInfoDto":
         return OAuthUserInfoDto(
             email=response.emails[0],

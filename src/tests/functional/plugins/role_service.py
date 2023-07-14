@@ -34,8 +34,9 @@ async def roles(request, create_fake_roles):
 
 
 @pytest_asyncio.fixture()
-async def roles_with_user(request, create_fake_roles, auth_user: AuthUser,
-                          role_repository: RoleRepository) -> List[AuthRole]:
+async def roles_with_user(
+    request, create_fake_roles, auth_user: AuthUser, role_repository: RoleRepository
+) -> List[AuthRole]:
     _roles = await create_fake_roles(request.param)
 
     await role_repository.add_roles_to_user(auth_user.id, [_role.id for _role in _roles])

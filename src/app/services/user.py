@@ -9,8 +9,10 @@ from common.exceptions.user import UserException
 from repositories import UserRepository
 
 from schemas.request.user import (
-    UserChangeInfoSchema, UserRegistrationSchema,
-    UserLoginSchema, UserChangePasswordSchema,
+    UserChangeInfoSchema,
+    UserRegistrationSchema,
+    UserLoginSchema,
+    UserChangePasswordSchema,
 )
 from schemas.response.user import UserResponse
 
@@ -32,13 +34,11 @@ class UserServiceABC(ABC):
         ...
 
     @abstractmethod
-    async def change_info(self, user_id: uuid.UUID,
-                          info_schema: UserChangeInfoSchema) -> UserResponse:
+    async def change_info(self, user_id: uuid.UUID, info_schema: UserChangeInfoSchema) -> UserResponse:
         ...
 
     @abstractmethod
-    async def password_change(self, user_id: uuid.UUID,
-                              password_schema: UserChangePasswordSchema) -> UserResponse:
+    async def password_change(self, user_id: uuid.UUID, password_schema: UserChangePasswordSchema) -> UserResponse:
         ...
 
     @abstractmethod
@@ -87,16 +87,14 @@ class UserService(UserServiceABC):
 
         return UserResponse.from_orm(user_db)
 
-    async def change_info(self, user_id: uuid.UUID,
-                          info_schema: UserChangeInfoSchema) -> UserResponse:
+    async def change_info(self, user_id: uuid.UUID, info_schema: UserChangeInfoSchema) -> UserResponse:
         """Изменение информации о пользователе"""
         user_db = await self.user_repository.get_user_by_field(id=user_id)
 
         await self.user_repository.update_user_fields(user_db, **info_schema.dict())
         return UserResponse.from_orm(user_db)
 
-    async def password_change(self, user_id: uuid.UUID,
-                              password_schema: UserChangePasswordSchema) -> UserResponse:
+    async def password_change(self, user_id: uuid.UUID, password_schema: UserChangePasswordSchema) -> UserResponse:
         """Изменение пароля пользователя"""
         user_db = await self.user_repository.get_user_by_field(id=user_id)
 

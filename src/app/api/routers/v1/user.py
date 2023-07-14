@@ -43,9 +43,7 @@ async def _registration(
     user_service: UserServiceABC = Depends(),
     rate_limit: RateLimiter = Depends(get_rate_limit),
 ) -> UserResponse:
-    await rate_limit.check_limit(
-        resource="user_registration", max_requests=5, period=RateLimitPeriodEnum.minutes,
-    )
+    await rate_limit.check_limit(resource="user_registration")
 
     logger.debug(f"Registration: {request_user.safe_data()}")
     try:
@@ -90,7 +88,9 @@ async def _login(
     user_response.tokens = tokens
 
     await history_service.create_history_event(
-        user_response.id, user_agent, ActionType.LOGIN,
+        user_response.id,
+        user_agent,
+        ActionType.LOGIN,
     )
     logger.info(f"Login complete: {user_response.json(include={'email'})}")
     return user_response
@@ -133,18 +133,23 @@ async def _password_change(
 ):
     logger.info(f"Change password: user_id - {auth_data.user_id}")
     await rate_limit.check_limit(
-        resource="user_registration", max_requests=5, period=RateLimitPeriodEnum.minutes,
+        resource="user_registration",
+        max_requests=5,
+        period=RateLimitPeriodEnum.minutes,
     )
 
     try:
         user_response = await user_service.password_change(
-            auth_data.user_id, request_change_password,
+            auth_data.user_id,
+            request_change_password,
         )
     except UserException:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     await history_service.create_history_event(
-        user_response.id, user_agent, ActionType.CHANGE_PASSWORD,
+        user_response.id,
+        user_agent,
+        ActionType.CHANGE_PASSWORD,
     )
     logger.info(f"Change password complete: user_id - {auth_data.user_id}")
     return Response(status_code=status.HTTP_204_NO_CONTENT)

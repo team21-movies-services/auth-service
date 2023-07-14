@@ -2,7 +2,6 @@ import logging
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import RedirectResponse
-
 from schemas.oauth import VKOAuthCodeRequestSchema
 from schemas.response.user import UserResponse
 from services import AuthServiceABC, UserServiceABC
