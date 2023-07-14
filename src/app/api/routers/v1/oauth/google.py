@@ -10,6 +10,7 @@ from services import AuthServiceABC, UserServiceABC
 from services.oauth.google import GoogleOAuthServiceABC
 from dependencies.auth import get_auth_data
 from schemas.auth import AuthData
+from domain.oauth.google.response import GoogleOAuthPairTokensResponseSchema
 
 router = APIRouter(prefix='/google', tags=['Авторизация через GOOGLE'])
 logger = logging.getLogger().getChild('oauth-actions')
@@ -81,3 +82,16 @@ async def _google_refresh(
     access_info = await google_oauth.refresh_token(auth_data.user_id)
     await google_oauth.add_access_token_to_cache(auth_data.user_id, access_info.access_token, access_info.expires_in)
     await google_oauth.set_refresh_token_cache_expire(auth_data.user_id, access_info.expires_in)
+
+
+@router.get(
+    '/tokens',
+    summary="Получить токены",
+    description="Получить google oauth access и refresh токены",
+    response_model=GoogleOAuthPairTokensResponseSchema,
+)
+async def _google_tokens(
+    auth_data: AuthData = Depends(get_auth_data),
+    google_oauth: GoogleOAuthServiceABC = Depends(),
+) -> GoogleOAuthPairTokensResponseSchema:
+    return await google_oauth.get_tokens_pair(auth_data.user_id)

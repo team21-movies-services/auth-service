@@ -19,6 +19,7 @@ from domain.oauth.google.response import (
     GoogleOAuthResponseRefreshSchema,
     GoogleOAuthResponseTokenSchema,
     GoogleOAuthResponseUserInfoSchema,
+    GoogleOAuthPairTokensResponseSchema,
 )
 from services.oauth.enums import GoogleOAuthEndpointEnum
 from utils.common import append_query_params_to_url
@@ -69,6 +70,10 @@ class GoogleOAuthServiceABC(ABC):
 
     @abstractmethod
     async def refresh_token(self, user_id: UUID) -> GoogleOAuthResponseRefreshSchema:
+        raise NotImplementedError
+    
+    @abstractmethod
+    async def get_tokens_pair(self, user_id: UUID) -> GoogleOAuthPairTokensResponseSchema:
         raise NotImplementedError
 
 
@@ -192,3 +197,18 @@ class GoogleOAuthService(GoogleOAuthServiceABC):
             logger.error(f"Can't refresh oauth google token. Error={error}")
             raise OAuthRequestError("Some error while was refreshing the token")
         return response_refresh
+
+    async def _get_access_token_from_cache(self, user_id: UUID) -> str | None:
+        access_cache_key = self._config.access_token_cache_key.format(user_id=user_id)
+        return await self._cache_client.get_from_cache(access_cache_key)
+
+    async def _get_refresh_token_from_cache(self, user_id: UUID) -> str | None:
+        access_cache_key = self._config.refresh_token_cache_key.format(user_id=user_id)
+        return await self._cache_client.get_from_cache(access_cache_key)
+
+    async def get_tokens_pair(self, user_id: UUID) -> GoogleOAuthPairTokensResponseSchema:
+        access_token = await self._get_access_token_from_cache(user_id)
+        refresh_token = await self._get_refresh_token_from_cache(user_id)
+        if not access_token or not refresh_token:
+            raise OAuthTokenExpiredException
+        return GoogleOAuthPairTokensResponseSchema(access_token=access_token, refresh_token=refresh_token)

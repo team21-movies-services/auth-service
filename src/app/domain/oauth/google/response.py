@@ -23,3 +23,8 @@ class GoogleOAuthResponseUserInfoSchema(BaseModel):
     given_name: str | None
     family_name: str | None
     name: str | None
+
+
+class GoogleOAuthPairTokensResponseSchema(BaseModel):
+    access_token: str
+    refresh_token: str
