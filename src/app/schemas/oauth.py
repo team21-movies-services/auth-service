@@ -55,3 +55,9 @@ class VKOAuthCodeRequestSchema(BaseModel):
     code: str
     error: Optional[str]
     error_description: Optional[str]
+
+
+class GoogleOAuthCodeRequestSchema(BaseModel):
+    code: str
+    error: Optional[str]
+    error_description: Optional[str]

@@ -13,3 +13,10 @@ class VKOAuthEndpointEnum(str, Enum):
     token_endpoint = "https://oauth.vk.com/access_token"
     user_info = "https://api.vk.com/method/users.get"
     # token_revoke = "https://oauth.yandex.ru/revoke_token"
+
+
+class GoogleOAuthEndpointEnum(str, Enum):
+    authorization_endpoint = "https://accounts.google.com/o/oauth2/v2/auth"
+    token_endpoint = "https://oauth2.googleapis.com/token"
+    revoke_endpoint = "https://oauth2.googleapis.com/revoke"
+    refresh_endpoint = "https://oauth2.googleapis.com/token"

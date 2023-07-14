@@ -23,3 +23,7 @@ class TokenDecodeException(TokenException):
 
 class TokenExpiredException(AuthException):
     """Token Expired Exception"""
+
+
+class OAuthTokenExpiredException(OAuthException):
+    """OAuth Access Token Expired Exception"""
