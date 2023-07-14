@@ -1,9 +1,8 @@
-from uuid import UUID
+from datetime import datetime
 from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel
-from datetime import datetime
-
 from schemas.response.token import TokensResponse
 
 

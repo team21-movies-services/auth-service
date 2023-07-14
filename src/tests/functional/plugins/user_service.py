@@ -1,6 +1,6 @@
-from repositories import UserRepository
 import pytest_asyncio
 from passlib.context import CryptContext
+from repositories import UserRepository
 
 pwd_context = CryptContext(schemes=["bcrypt"])
 

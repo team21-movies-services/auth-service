@@ -1,20 +1,19 @@
-from dependencies.common import get_session, get_redis_client
-from functional.settings import get_settings
-from main import app
-from sqlalchemy.exc import InvalidRequestError
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 import pytest_asyncio
+from dependencies.common import get_redis_client, get_session
+from functional.settings import get_settings
 from httpx import AsyncClient
-from sqlalchemy.sql import text as sa_text
+from main import app
 from models.base import BaseModel, metadata
+from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.sql import text as sa_text
 
 settings = get_settings()
 
 
 @pytest_asyncio.fixture(name='db_session', scope='session')
 async def session_fixture():
-    engine = create_async_engine(settings.postgres.database_url,
-                                 echo=settings.postgres.echo_log)
+    engine = create_async_engine(settings.postgres.database_url, echo=settings.postgres.echo_log)
     async with engine.begin() as conn:
         await conn.run_sync(BaseModel.metadata.drop_all)
         await conn.run_sync(BaseModel.metadata.create_all)
@@ -34,8 +33,8 @@ async def session_fixture():
 async def clean_db(db_session):
     meta = metadata
     clear_table_sql = 'TRUNCATE {} CASCADE;'.format(
-        ','.join(f'auth.{table.name}'
-                 for table in reversed(meta.sorted_tables)))
+        ','.join(f'auth.{table.name}' for table in reversed(meta.sorted_tables))
+    )
     await db_session.execute(sa_text(clear_table_sql))
     await db_session.commit()
 

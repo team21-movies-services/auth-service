@@ -1,16 +1,16 @@
-from fastapi import FastAPI
-
-from redis.asyncio import Redis
-
-from providers import BaseProvider
 from common.exceptions import AppException
+from fastapi import FastAPI
 from opentelemetry.instrumentation.redis import RedisInstrumentor
+from providers import BaseProvider
+from redis.asyncio import Redis
 
 
 class RedisProvider(BaseProvider):
     def __init__(
-        self, app: FastAPI,
-        host: str, port: int,
+        self,
+        app: FastAPI,
+        host: str,
+        port: int,
     ):
         self.app = app
         self.host = host

@@ -1,18 +1,12 @@
-import uuid
 import enum
-
-from sqlalchemy.dialects.postgresql import UUID, ENUM
-
-from sqlalchemy import (
-    PrimaryKeyConstraint,
-    ForeignKeyConstraint,
-)
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import relationship
+import uuid
 
 from models import AuthDevice
 from models.base import BaseModel, Column
 from models.mixins import IdMixin, TsMixinCreated
+from sqlalchemy import ForeignKeyConstraint, PrimaryKeyConstraint
+from sqlalchemy.dialects.postgresql import ENUM, UUID
+from sqlalchemy.orm import Mapped, relationship
 
 
 @enum.unique
@@ -31,11 +25,13 @@ class AuthHistory(BaseModel, IdMixin, TsMixinCreated):
         PrimaryKeyConstraint('id', name='auth_history_pkey'),
         # Index("history_user_id_action_id_device_id_uniq", 'user_id', 'action_type', 'device_id', unique=True),
         ForeignKeyConstraint(
-            ['user_id'], ['auth.user.id'],
+            ['user_id'],
+            ['auth.user.id'],
             name='user_id__fk',
         ),
         ForeignKeyConstraint(
-            ['device_id'], ['auth.device.id'],
+            ['device_id'],
+            ['auth.device.id'],
             name='device_id__fk',
         ),
         {"schema": "auth"},

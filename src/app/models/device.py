@@ -1,12 +1,7 @@
-from sqlalchemy import (
-    Text,
-    PrimaryKeyConstraint,
-    UniqueConstraint,
-)
-from sqlalchemy.orm import Mapped
-
 from models.base import BaseModel, Column
 from models.mixins import IdMixin
+from sqlalchemy import PrimaryKeyConstraint, Text, UniqueConstraint
+from sqlalchemy.orm import Mapped
 
 
 class AuthDevice(BaseModel, IdMixin):

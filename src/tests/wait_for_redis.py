@@ -1,10 +1,11 @@
-import sys
 import logging
+import sys
+
+import backoff
 from pydantic.env_settings import BaseSettings
 from pydantic.fields import Field
 from redis import Redis
 from redis.exceptions import ConnectionError
-import backoff
 
 BACKOFF_CONFIG = {
     "wait_gen": backoff.expo,

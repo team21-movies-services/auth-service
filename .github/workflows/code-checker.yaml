@@ -27,5 +27,15 @@ jobs:
     - name: "Установка зависимостей"
       run: poetry install --no-root --only dev || true
 
-    - name: "Запуск линтеров"
-      run: poetry run flake8 ./src
+    - name: "Запуск линтеров: flake mypy"
+      run: |
+        poetry run flake8 ./src
+        poetry run mypy ./src
+
+    - name: "Запуск линтеров: black, isort"
+      run: |
+        poetry run black --check ./src
+        poetry run isort --check ./src
+
+    - name: Run black on full codebase
+      uses: psf/black@stable

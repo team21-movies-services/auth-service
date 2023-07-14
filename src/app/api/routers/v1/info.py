@@ -1,24 +1,21 @@
 import logging
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status, Header
-
-from common.enums import RateLimitPeriodEnum
+from common.exceptions import UserException
+from dependencies.auth import get_auth_data
 from dependencies.common import get_rate_limit
-from utils.rate_limit import RateLimiter
-
+from fastapi import APIRouter, Depends, Header, HTTPException, status
 from models.history import ActionType
+from schemas.auth import AuthData
 from schemas.request.info import HistoryRequest
 from schemas.request.user import UserChangeInfoSchema
 from schemas.response.info import HistoryResponse
 from schemas.response.role import RoleResponse
 from schemas.response.user import UserResponse
-from schemas.auth import AuthData
 from services import UserServiceABC
-from common.exceptions import UserException
 from services.history import HistoryServiceABC
-from dependencies.auth import get_auth_data
 from services.role import RoleServiceABC
+from utils.rate_limit import RateLimiter
 
 router = APIRouter(prefix='/user/info', tags=['Пользовательские данные'])
 
@@ -59,9 +56,7 @@ async def _change_user_info(
     auth_data: AuthData = Depends(get_auth_data),
     user_agent: str = Header(),
 ) -> UserResponse:
-    await rate_limit.check_limit(
-        resource="user_change", max_requests=5, period=RateLimitPeriodEnum.minutes,
-    )
+    await rate_limit.check_limit(resource="user_change")
 
     try:
         user_response = await user_service.change_info(auth_data.user_id, request_user_info)
@@ -69,7 +64,9 @@ async def _change_user_info(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     await history_service.create_history_event(
-        user_response.id, user_agent, ActionType.CHANGE_INFO,
+        user_response.id,
+        user_agent,
+        ActionType.CHANGE_INFO,
     )
 
     return user_response

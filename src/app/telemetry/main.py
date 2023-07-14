@@ -1,5 +1,6 @@
 import logging
 
+from core.config import Settings, settings
 from fastapi import FastAPI
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.resources import Resource
@@ -7,9 +8,6 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.trace import Tracer, get_tracer, set_tracer_provider
 from telemetry.console import setup_console
 from telemetry.jaeger import setup_jaeger
-
-from core.config import Settings, settings
-
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +20,6 @@ def _setup_tracer(settings: Settings) -> TracerProvider:
 
 
 def setup_telemetry(app: FastAPI, settings: Settings):
-
     tracer = _setup_tracer(settings)
     logger.info(f"Init main Tracer Provider - service name: {settings.project.name}")
 

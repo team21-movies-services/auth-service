@@ -1,11 +1,9 @@
 import logging
 
+from core.config import Settings
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-
-from core.config import Settings
-
 
 logger = logging.getLogger(__name__)
 

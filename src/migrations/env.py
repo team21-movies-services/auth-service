@@ -1,12 +1,9 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
-
-from models.base import BaseModel
 from core.config import Settings
+from models.base import BaseModel
+from sqlalchemy import engine_from_config, pool
 
 settings = Settings()
 
@@ -75,7 +72,7 @@ def run_migrations_online() -> None:
             target_metadata=target_metadata,
             version_table_schema=target_metadata.schema,
             include_schemas=True,
-            compare_type=True
+            compare_type=True,
         )
 
         with context.begin_transaction():

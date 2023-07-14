@@ -6,6 +6,13 @@ authors = ["Орлов Ярослав <orlov.avis@yandex.ru>"]
 readme = "README.md"
 packages = [{include = "auth_service"}]
 
+[tool.black]
+line-length = 120
+skip-string-normalization = true
+
+[tool.isort]
+profile = "black"
+
 [tool.poetry.dependencies]
 python = "^3.10"
 fastapi = "0.95.1"
@@ -13,7 +20,7 @@ uvicorn = "^0.22.0"
 passlib = "^1.7.4"
 orjson = "^3.9.1"
 sqlalchemy = "^2.0.17"
-pyjwt = "^2.7.0"
+pyjwt = {extras = ["crypto"], version = "^2.7.0"}
 alembic = "^1.11.1"
 gunicorn = "^20.1.0"
 pydantic = {extras = ["email"], version = "^1.10.9"}
@@ -27,6 +34,7 @@ opentelemetry-instrumentation-fastapi = "0.38b0"
 opentelemetry-exporter-jaeger = "1.17.0"
 opentelemetry-instrumentation-sqlalchemy = "0.38b0"
 opentelemetry-instrumentation-redis = "0.38b0"
+cryptography = "^41.0.2"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -42,6 +50,8 @@ pre-commit = "3.3.3"
 flake8-pytest = "1.4"
 flake8-pytest-style = "1.7.2"
 types-redis = "^4.6.0.1"
+black = "^23.7.0"
+isort = "^5.12.0"
 
 
 [tool.poetry.group.test.dependencies]

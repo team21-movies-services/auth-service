@@ -1,24 +1,20 @@
-import jwt
-
-from typing import Optional
 import logging
-from uuid import UUID
 from abc import ABC, abstractmethod
-
 from datetime import datetime, timedelta
-from schemas.auth import AuthData, RefreshData
+from typing import Optional
+from uuid import UUID
 
-from cache.base import CacheServiceABC
-
-from common.constants import EXPIRE_ACCESS_TOKEN, EXPIRE_REFRESH_TOKEN
 import common.exceptions.auth as auth_exceptions
+import jwt
+from common.constants import EXPIRE_ACCESS_TOKEN, EXPIRE_REFRESH_TOKEN
+from schemas.auth import AuthData, RefreshData
 from schemas.response.token import TokensResponse
+from wrappers.cache.base import CacheServiceABC
 
 logger = logging.getLogger(__name__)
 
 
 class AuthServiceABC(ABC):
-
     @abstractmethod
     async def create_access_token(self, user_id: UUID, is_superuser: bool = False) -> str:
         ...
@@ -57,10 +53,10 @@ class AuthService(AuthServiceABC):
         return TokensResponse(access_token=access_token, refresh_token=refresh_token)
 
     def _create_token(
-            self,
-            expire_timestamp: int,
-            user_id: Optional[UUID] = None,
-            is_superuser: Optional[bool] = None,
+        self,
+        expire_timestamp: int,
+        user_id: Optional[UUID] = None,
+        is_superuser: Optional[bool] = None,
     ) -> str:
         payload = {
             'sub': 'authentication',
@@ -75,21 +71,19 @@ class AuthService(AuthServiceABC):
         try:
             token = jwt.encode(payload, self.jwt_secret_key, algorithm=self.encode_algorithm)
         except (ValueError, TypeError):
-            logger.error("Can't create jwt token! See JWT_SECRET_KEY env, or something else...",
-                         exc_info=True)
+            logger.error("Can't create jwt token! See JWT_SECRET_KEY env, or something else...", exc_info=True)
             raise auth_exceptions.TokenEncodeException()
 
         return token
 
     def _validate_token(self, token: str) -> dict:
-
         try:
             payload: dict = jwt.decode(token, self.jwt_secret_key, algorithms=[self.encode_algorithm])
         except (
-                jwt.DecodeError,
-                jwt.InvalidKeyError,
-                jwt.InvalidIssuerError,
-                jwt.InvalidSignatureError,
+            jwt.DecodeError,
+            jwt.InvalidKeyError,
+            jwt.InvalidIssuerError,
+            jwt.InvalidSignatureError,
         ):
             logger.error(f"Can't decode jwt token! See {token}")
             raise auth_exceptions.TokenDecodeException()
@@ -105,9 +99,11 @@ class AuthService(AuthServiceABC):
         """Генерация refresh токена и запись в кеш."""
 
         refresh_expire = (datetime.now() + timedelta(seconds=EXPIRE_REFRESH_TOKEN)).timestamp()
-        refresh_token = self._create_token(expire_timestamp=int(refresh_expire),
-                                           user_id=user_id,
-                                           is_superuser=is_superuser)
+        refresh_token = self._create_token(
+            expire_timestamp=int(refresh_expire),
+            user_id=user_id,
+            is_superuser=is_superuser,
+        )
 
         await self.cache_client.put_to_cache(key=refresh_token, value=str(user_id), expire=EXPIRE_REFRESH_TOKEN)
 

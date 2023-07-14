@@ -1,8 +1,8 @@
 import os
 
-from pydantic import BaseSettings, Field
-from core.oauth_config import OAuthConfig
 from common.enums import RateLimitPeriodEnum
+from core.oauth_config import OAuthConfig
+from pydantic import BaseSettings, Field
 
 
 # Настройки Redis

@@ -2,8 +2,8 @@ import logging
 from typing import Optional
 
 from common.enums import RateLimitPeriodEnum
-from cache.base import CacheServiceABC
 from common.exceptions.base import TooManyRequests
+from wrappers.cache.base import CacheServiceABC
 
 logger = logging.getLogger(__name__)
 
@@ -45,8 +45,7 @@ class RateLimiter:
 
         current_usage = await self.cache_client.get_from_cache(rate_limit_key)
         logger.info(
-            f"Get from cache '{rate_limit_key}' for check rate limit. "
-            f"Max Limit = {max_requests}",
+            f"Get from cache '{rate_limit_key}' for check rate limit. " f"Max Limit = {max_requests}",
         )
         if current_usage:
             logger.info(f"Get count requests: {current_usage}")

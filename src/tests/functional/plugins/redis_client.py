@@ -1,7 +1,6 @@
 import pytest_asyncio
-from redis.asyncio import Redis
-
 from functional.settings import Settings
+from redis.asyncio import Redis
 
 
 @pytest_asyncio.fixture(scope="session")

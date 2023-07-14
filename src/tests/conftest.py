@@ -1,6 +1,6 @@
-import pytest
 import asyncio
 
+import pytest
 from functional.settings import get_settings
 
 pytest_plugins = (

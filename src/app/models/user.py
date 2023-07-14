@@ -1,18 +1,17 @@
 import uuid
-from sqlalchemy.dialects.postgresql import UUID
-
-from sqlalchemy import (
-    String,
-    Boolean,
-    Index,
-    PrimaryKeyConstraint,
-    ForeignKeyConstraint,
-    UniqueConstraint,
-)
-from sqlalchemy.orm import Mapped, relationship
 
 from models.base import BaseModel, Column
 from models.mixins import IdMixin, TsMixinCreated, TsMixinUpdated
+from sqlalchemy import (
+    Boolean,
+    ForeignKeyConstraint,
+    Index,
+    PrimaryKeyConstraint,
+    String,
+    UniqueConstraint,
+)
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, relationship
 
 
 class AuthUser(BaseModel, IdMixin, TsMixinCreated, TsMixinUpdated):
@@ -35,7 +34,8 @@ class AuthUser(BaseModel, IdMixin, TsMixinCreated, TsMixinUpdated):
     is_active: Mapped[bool] = Column(Boolean, default=True, nullable=False)
 
     roles = relationship(
-        'AuthRole', secondary='auth.user_role',
+        'AuthRole',
+        secondary='auth.user_role',
     )
 
     def __repr__(self):
@@ -54,11 +54,13 @@ class AuthUserRole(BaseModel, IdMixin, TsMixinCreated):
         PrimaryKeyConstraint('id', name='auth_user_role_pkey'),
         Index("user_role_user_id_role_id_uniq", 'user_id', 'role_id', unique=True),
         ForeignKeyConstraint(
-            ['user_id'], ['auth.user.id'],
+            ['user_id'],
+            ['auth.user.id'],
             name='user_id__fk',
         ),
         ForeignKeyConstraint(
-            ['role_id'], ['auth.role.id'],
+            ['role_id'],
+            ['auth.role.id'],
             name='role_id__fk',
         ),
         {"schema": "auth"},
@@ -82,11 +84,13 @@ class AuthUserRememberDevice(BaseModel, IdMixin, TsMixinCreated):
         PrimaryKeyConstraint('id', name='auth_user_remember_device_pkey'),
         Index("user_remember_device_user_id_device_id_uniq", 'user_id', 'device_id', unique=True),
         ForeignKeyConstraint(
-            ['user_id'], ['auth.user.id'],
+            ['user_id'],
+            ['auth.user.id'],
             name='user_id__fk',
         ),
         ForeignKeyConstraint(
-            ['device_id'], ['auth.device.id'],
+            ['device_id'],
+            ['auth.device.id'],
             name='device_id__fk',
         ),
         {"schema": "auth"},

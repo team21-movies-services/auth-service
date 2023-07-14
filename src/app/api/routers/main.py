@@ -1,6 +1,5 @@
-from fastapi import FastAPI, APIRouter
-
 from api.routers import router as top_router
+from fastapi import APIRouter, FastAPI
 
 
 def setup_routers(app: FastAPI):

@@ -1,13 +1,10 @@
 import logging
-
 from typing import Optional
 
-from sqlalchemy.exc import IntegrityError
-
 from common.exceptions.user import UserAlreadyExists, UserNotExists
-
-from repositories.base import SQLAlchemyRepository
 from models.user import AuthUser
+from repositories.base import SQLAlchemyRepository
+from sqlalchemy.exc import IntegrityError
 
 logger = logging.getLogger(__name__)
 
@@ -15,8 +12,7 @@ logger = logging.getLogger(__name__)
 class UserRepository(SQLAlchemyRepository):
     model = AuthUser
 
-    async def get_user_by_field(self, raise_if_notfound: bool = True,
-                                **fields) -> Optional[AuthUser]:
+    async def get_user_by_field(self, raise_if_notfound: bool = True, **fields) -> Optional[AuthUser]:
         """Получение записи пользователя по полю если оно существует"""
 
         result = await self.get_by(**fields)
