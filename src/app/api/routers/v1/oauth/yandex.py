@@ -1,5 +1,4 @@
 import logging
-import uuid
 
 from fastapi import APIRouter, status, Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
@@ -13,6 +12,7 @@ from schemas.oauth import (
     ResponseStatus,
     OAuthUserInfoSchema,
 )
+from schemas.response.user import UserResponse
 from schemas.response.token import TokensResponse
 from services import UserServiceABC, AuthServiceABC
 from services.device import DeviceService
@@ -55,7 +55,8 @@ async def _yandex_callback(
     oauth_code_req: OAuthCodeRequestSchema = Depends(),
     yandex_oauth_service: YandexOAuthServiceABC = Depends(),
     user_service: UserServiceABC = Depends(),
-) -> uuid.UUID:
+    auth_service: AuthServiceABC = Depends(),
+) -> UserResponse:
     if not oauth_code_req.code:
         logger.warning(f"{oauth_code_req.error} - {oauth_code_req.error_description}")
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
@@ -63,44 +64,13 @@ async def _yandex_callback(
     oauth_request_token = OAuthRequestTokenDto(
         code=oauth_code_req.code, state=oauth_code_req.state,
     )
-    token_dto: OAuthTokenDto = await yandex_oauth_service.fetch_token(
+    token_dto = await yandex_oauth_service.fetch_token(
         oauth_request_token,
     )
-    user_info: OAuthUserInfoDto = await yandex_oauth_service.user_info(token_dto)
-    user_id: uuid.UUID = await user_service.get_or_create_user_from_oauth(user_info)
-    # FIXME: а что возвращать то?
-    return user_id
-
-
-# @router.get(
-#     '/tokens',
-#     summary="Коллбэк при успешной авторизации в соцсети",
-# )
-# async def _yandex_tokens(
-#     params: CodeResponse = Depends(),
-#     user_service: UserServiceABC = Depends(),
-#     auth_service: AuthServiceABC = Depends(),
-#     yandex_oauth: YandexOAuthService = Depends(),
-# ) -> TokensResponse:
-#     if not params.code:
-#         logger.warning(f'{params.error} - {params.error_description}')
-#         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-
-#     tokens: OAuthTokens = await yandex_oauth.fetch_token(params.code, params.state)
-#     userinfo: OAuthUserInfoSchema = await yandex_oauth.user_info(tokens.access_token)
-
-#     user_id: uuid.UUID = await user_service.get_or_create_user_from_oauth(userinfo)
-
-#     await yandex_oauth.add_access_token_to_cache(user_id, tokens)
-
-#     try:
-#         token_response: TokensResponse = await auth_service.create_token_pair(user_id=user_id)
-#     except AuthException:
-#         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-#     logger.info(f"Login oauth complete: user_id - {user_id}")
-#     return token_response
-
+    user_info = await yandex_oauth_service.user_info(token_dto)
+    user_response = await user_service.get_or_create_user_from_oauth(user_info)
+    user_response.tokens = await auth_service.create_token_pair(user_response.id)
+    return user_response
 
 # #
 # # @router.post('/refresh')

@@ -7,7 +7,6 @@ from pydantic import ValidationError
 from abc import ABC, abstractmethod
 from common.exceptions.base import OAuthRequestError
 
-import httpx
 from httpx import Response
 
 from wrappers.cache.base import CacheServiceABC
@@ -38,19 +37,23 @@ from domain.oauth.yandex.response import (
 logger = logging.getLogger(__name__)
 
 
-class YandexOAuthServiceABC:
+class YandexOAuthServiceABC(ABC):
+    @abstractmethod
     def create_authorization_url(self, auth_url_dto: AuthorizationUrlDto) -> str:
         ...
 
+    @abstractmethod
     async def fetch_token(
         self,
         oauth_request_token: OAuthRequestTokenDto,
     ) -> OAuthTokenDto:
         ...
 
+    @abstractmethod
     async def get_user_info(self, auth_url_dto: AuthorizationUrlDto) -> str:
         ...
 
+    @abstractmethod
     async def user_info(self, token_dto: OAuthTokenDto) -> OAuthUserInfoDto:
         ...
 
