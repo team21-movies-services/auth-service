@@ -49,3 +49,9 @@ class OAuthUserInfoSchema(BaseModel):
             first_name=data.get('first_name', ''),
             last_name=data.get('last_name', ''),
         )
+
+
+class VKOAuthCodeRequestSchema(BaseModel):
+    code: str
+    error: Optional[str]
+    error_description: Optional[str]

@@ -18,5 +18,11 @@ class YandexOAuthConfig(BaseSettings):
     client_secret: str = Field(default='', env="YANDEX_CLIENT_SECRET")
 
 
+class VKOAuthConfig(BaseSettings):
+    client_id: str = Field(default='', env="VK_CLIENT_ID")
+    client_secret: str = Field(default='', env="VK_CLIENT_SECRET")
+
+
 class OAuthConfig(BaseSettings):
     yandex: YandexOAuthConfig = YandexOAuthConfig()
+    vk: VKOAuthConfig = VKOAuthConfig()
