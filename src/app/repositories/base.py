@@ -2,10 +2,11 @@ import uuid
 from typing import Generic, Type, TypeVar
 
 from common.exceptions.base import ObjectDoesNotExist
+from models.mixins import IdMixin
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import delete, select
 
-dbModel = TypeVar("dbModel")
+dbModel = TypeVar("dbModel", bound=IdMixin)
 
 
 class SQLAlchemyRepository(Generic[dbModel]):
@@ -16,11 +17,11 @@ class SQLAlchemyRepository(Generic[dbModel]):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def commit(self):
+    async def commit(self) -> None:
         await self.session.commit()
 
     async def delete_by_id(self, obj_id: uuid.UUID) -> None:
-        stmt = delete(self.model).where(self.model.id == obj_id)  # type:ignore
+        stmt = delete(self.model).where(self.model.id == obj_id)
         await self.session.execute(stmt)
         await self.commit()
 
@@ -36,7 +37,7 @@ class SQLAlchemyRepository(Generic[dbModel]):
 
     async def get_or_create(self, **kwargs) -> dbModel:
         instance = await self.get_by(**kwargs)
-        if not instance:
+        if instance is None:
             instance = self.model(**kwargs)
             self.session.add(instance)
             await self.session.commit()
