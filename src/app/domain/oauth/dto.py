@@ -11,6 +11,7 @@ class OAuthUserInfoDto(BaseDTO):
     email: str
     first_name: str
     last_name: str
+    social_id: str
 
     @classmethod
     def from_yandex_response(
@@ -21,6 +22,7 @@ class OAuthUserInfoDto(BaseDTO):
             email=response.emails[0],
             first_name=response.first_name,
             last_name=response.last_name,
+            social_id=str(response.id),
         )
 
     @classmethod
@@ -37,6 +39,7 @@ class OAuthUserInfoDto(BaseDTO):
             email=response.email,
             first_name=response.first_name,
             last_name=response.last_name,
+            social_id=response.id,
         )
 
     @classmethod
@@ -44,10 +47,16 @@ class OAuthUserInfoDto(BaseDTO):
         cls,
         response: GoogleOAuthResponseUserInfoSchema,
     ) -> "OAuthUserInfoDto":
+        if not response.given_name:
+            response.given_name = ""
+        if not response.family_name:
+            response.family_name = ""
+
         return OAuthUserInfoDto(
             email=response.email,
             first_name=response.given_name,
             last_name=response.family_name,
+            social_id=response.sub,
         )
 
 

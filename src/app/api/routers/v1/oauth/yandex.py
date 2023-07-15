@@ -1,17 +1,14 @@
 import logging
 
+from common.enums import SocialNameEnum
 from dependencies.auth import get_auth_data
-from domain.oauth.yandex.dto import (
-    AuthorizationUrlDto,
-    CacheTokensDto,
-    OAuthRequestTokenDto,
-)
+from domain.oauth.yandex.dto import AuthorizationUrlDto, CacheTokensDto, OAuthRequestTokenDto
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from schemas.auth import AuthData
 from schemas.oauth import OAuthCodeRequestSchema
 from schemas.response.user import UserResponse
-from services import AuthServiceABC, UserServiceABC
+from services import AuthServiceABC, SocialAccountServiceABC, UserServiceABC
 from services.device import DeviceService
 from services.oauth.yandex import YandexOAuthServiceABC
 
@@ -50,6 +47,7 @@ async def _yandex_callback(
     yandex_oauth_service: YandexOAuthServiceABC = Depends(),
     user_service: UserServiceABC = Depends(),
     auth_service: AuthServiceABC = Depends(),
+    social_account: SocialAccountServiceABC = Depends(),
 ) -> UserResponse:
     if not oauth_code_req.code:
         logger.warning(f"{oauth_code_req.error} - {oauth_code_req.error_description}")
@@ -58,7 +56,10 @@ async def _yandex_callback(
     oauth_request_token = OAuthRequestTokenDto(code=oauth_code_req.code, state=oauth_code_req.state)
     token_dto = await yandex_oauth_service.fetch_token(oauth_request_token)
     user_info = await yandex_oauth_service.user_info(token_dto)
-    user_response = await user_service.get_or_create_user_from_oauth(user_info)
+    user_response = await social_account.get_user_by_social_account(SocialNameEnum.YANDEX.value, user_info.social_id)
+    if not user_response:
+        user_response = await user_service.get_or_create_user_from_oauth(user_info)
+        await social_account.create_social(SocialNameEnum.YANDEX.value, user_info.social_id, user_response.id)
     user_response.tokens = await auth_service.create_token_pair(user_response.id)
     cache_tokens_dto = CacheTokensDto(
         user_id=user_response.id,

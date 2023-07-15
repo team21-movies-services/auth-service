@@ -12,3 +12,4 @@ class VKOAuthResponseUserInfoSchema(BaseModel):
     email: EmailStr
     first_name: str
     last_name: str
+    id: str

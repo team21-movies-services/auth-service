@@ -1,10 +1,12 @@
-from typing import List
+from typing import TYPE_CHECKING, List
 
-from models import AuthUser
 from models.base import BaseModel, Column
 from models.mixins import IdMixin
 from sqlalchemy import PrimaryKeyConstraint, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, relationship
+
+if TYPE_CHECKING:
+    from models import AuthUser
 
 
 class AuthRole(BaseModel, IdMixin):
@@ -20,7 +22,7 @@ class AuthRole(BaseModel, IdMixin):
     name: Mapped[str] = Column(String(127), nullable=True)
     description: Mapped[str] = Column(Text(), nullable=True)
 
-    users: Mapped[List[AuthUser]] = relationship(
+    users: Mapped[List["AuthUser"]] = relationship(
         'AuthUser',
         secondary='auth.user_role',
     )

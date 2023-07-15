@@ -1,17 +1,14 @@
 import uuid
+from typing import TYPE_CHECKING
 
 from models.base import BaseModel, Column
 from models.mixins import IdMixin, TsMixinCreated, TsMixinUpdated
-from sqlalchemy import (
-    Boolean,
-    ForeignKeyConstraint,
-    Index,
-    PrimaryKeyConstraint,
-    String,
-    UniqueConstraint,
-)
+from sqlalchemy import Boolean, ForeignKeyConstraint, Index, PrimaryKeyConstraint, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, relationship
+
+if TYPE_CHECKING:
+    from models import SocialAccount
 
 
 class AuthUser(BaseModel, IdMixin, TsMixinCreated, TsMixinUpdated):
@@ -37,6 +34,7 @@ class AuthUser(BaseModel, IdMixin, TsMixinCreated, TsMixinUpdated):
         'AuthRole',
         secondary='auth.user_role',
     )
+    social_accounts: Mapped["SocialAccount"] = relationship(back_populates='user')
 
     def __repr__(self):
         return (

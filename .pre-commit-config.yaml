@@ -22,7 +22,6 @@ repos:
         name: black
         description: black
         entry: env -i PATH=./bin:./.venv/bin:./venv/bin python3 -m black
-        args: ["--check"]
         language: python
         types: [python]
 -   repo: local
@@ -31,6 +30,6 @@ repos:
         name: isort
         description: isort
         entry: env -i PATH=./bin:./.venv/bin:./venv/bin python3 -m isort
-        args: ["--check"]
+        args:  [--reverse-relative, --line-length=120, --filter-files]
         language: python
         types: [python]

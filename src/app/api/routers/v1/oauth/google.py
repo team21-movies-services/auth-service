@@ -1,6 +1,7 @@
 import http
 import logging
 
+from common.enums import SocialNameEnum
 from dependencies.auth import get_auth_data
 from domain.oauth.google.response import GoogleOAuthPairTokensResponseSchema
 from fastapi import APIRouter, Depends, Request
@@ -8,7 +9,7 @@ from fastapi.responses import RedirectResponse
 from schemas.auth import AuthData
 from schemas.oauth import GoogleOAuthCodeRequestSchema
 from schemas.response.user import UserResponse
-from services import AuthServiceABC, UserServiceABC
+from services import AuthServiceABC, SocialAccountServiceABC, UserServiceABC
 from services.oauth.google import GoogleOAuthServiceABC
 
 router = APIRouter(prefix='/google', tags=['Авторизация через GOOGLE'])
@@ -42,11 +43,15 @@ async def _google_callback(
     google_oauth: GoogleOAuthServiceABC = Depends(),
     user_service: UserServiceABC = Depends(),
     auth_service: AuthServiceABC = Depends(),
+    social_account: SocialAccountServiceABC = Depends(),
 ) -> UserResponse:
     redirect_uri = request.url_for("_google_callback")
     access_info = await google_oauth.fetch_access_token(str(redirect_uri), params.code)
     user_info = await google_oauth.fetch_user_info(access_info)
-    user_response = await user_service.get_or_create_user_from_oauth(user_info)
+    user_response = await social_account.get_user_by_social_account(SocialNameEnum.GOOGLE.value, user_info.social_id)
+    if not user_response:
+        user_response = await user_service.get_or_create_user_from_oauth(user_info)
+        await social_account.create_social(SocialNameEnum.GOOGLE.value, user_info.social_id, user_response.id)
     user_response.tokens = await auth_service.create_token_pair(user_response.id)
     await google_oauth.add_access_token_to_cache(user_response.id, access_info.access_token, access_info.expires_in)
     await google_oauth.add_refresh_token_to_cache(user_response.id, access_info.refresh_token, access_info.expires_in)
