@@ -32,10 +32,10 @@ jobs:
         poetry run flake8 ./src
         poetry run mypy ./src
 
-    # - name: "Запуск линтеров: black, isort"
-    #   run: |
-    #     poetry run black --check ./src
-    #     poetry run isort --check ./src
+    - name: "Запуск линтеров: black, isort"
+      run: |
+        poetry run black --check ./src
+        poetry run isort --check ./src
 
-    # - name: Run black on full codebase
-    #   uses: psf/black@stable
+    - name: Run black on full codebase
+      uses: psf/black@stable
