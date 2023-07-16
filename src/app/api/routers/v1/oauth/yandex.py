@@ -1,10 +1,15 @@
 import logging
 
-from common.enums import SocialNameEnum
-from dependencies.auth import get_auth_data
-from domain.oauth.yandex.dto import AuthorizationUrlDto, CacheTokensDto, OAuthRequestTokenDto
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
+
+from common.enums import SocialNameEnum
+from dependencies.auth import get_auth_data
+from domain.oauth.yandex.dto import (
+    AuthorizationUrlDto,
+    CacheTokensDto,
+    OAuthRequestTokenDto,
+)
 from schemas.auth import AuthData
 from schemas.oauth import OAuthCodeRequestSchema
 from schemas.response.user import UserResponse

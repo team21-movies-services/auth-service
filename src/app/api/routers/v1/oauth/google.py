@@ -1,11 +1,12 @@
 import http
 import logging
 
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import RedirectResponse
+
 from common.enums import SocialNameEnum
 from dependencies.auth import get_auth_data
 from domain.oauth.google.response import GoogleOAuthPairTokensResponseSchema
-from fastapi import APIRouter, Depends, Request
-from fastapi.responses import RedirectResponse
 from schemas.auth import AuthData
 from schemas.oauth import GoogleOAuthCodeRequestSchema
 from schemas.response.user import UserResponse

@@ -12,6 +12,7 @@ skip-string-normalization = true
 
 [tool.isort]
 profile = "black"
+src_paths = ["src/app"]
 
 [tool.poetry.dependencies]
 python = "^3.10"

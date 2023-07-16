@@ -25,12 +25,11 @@ repos:
 #         args: ["--check"]
 #         language: python
 #         types: [python]
-# -   repo: local
-#     hooks:
-#     -   id: isort
-#         name: isort
-#         description: isort
-#         entry: env -i PATH=./bin:./.venv/bin:./venv/bin python3 -m isort
-#         args: ["--check"]
-#         language: python
-#         types: [python]
+-   repo: local
+    hooks:
+    -   id: isort
+        name: isort
+        description: isort
+        entry: env -i PATH=./bin:./.venv/bin:./venv/bin python3 -m isort
+        language: python
+        types: [python]

@@ -1,8 +1,9 @@
 import logging
 
-from common.enums import SocialNameEnum
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import RedirectResponse
+
+from common.enums import SocialNameEnum
 from schemas.oauth import VKOAuthCodeRequestSchema
 from schemas.response.user import UserResponse
 from services import AuthServiceABC, SocialAccountServiceABC, UserServiceABC
