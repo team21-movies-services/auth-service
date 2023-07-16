@@ -1,10 +1,11 @@
 import logging
 from typing import List
 
+from fastapi import APIRouter, Depends, Header, HTTPException, status
+
 from common.exceptions import UserException
 from dependencies.auth import get_auth_data
 from dependencies.common import get_rate_limit
-from fastapi import APIRouter, Depends, Header, HTTPException, status
 from models.history import ActionType
 from schemas.auth import AuthData
 from schemas.request.info import HistoryRequest

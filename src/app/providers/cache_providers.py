@@ -1,8 +1,9 @@
-from common.exceptions import AppException
 from fastapi import FastAPI
 from opentelemetry.instrumentation.redis import RedisInstrumentor
-from providers import BaseProvider
 from redis.asyncio import Redis
+
+from common.exceptions import AppException
+from providers import BaseProvider
 
 
 class RedisProvider(BaseProvider):

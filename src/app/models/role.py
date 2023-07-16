@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING, List
 
-from models.base import BaseModel, Column
-from models.mixins import IdMixin
 from sqlalchemy import PrimaryKeyConstraint, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, relationship
+
+from models.base import BaseModel, Column
+from models.mixins import IdMixin
 
 if TYPE_CHECKING:
     from models import AuthUser

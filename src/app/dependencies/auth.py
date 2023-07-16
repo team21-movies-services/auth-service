@@ -1,9 +1,10 @@
 import logging
 from typing import Optional
 
-from common.exceptions.auth import TokenException, TokenExpiredException
 from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import APIKeyHeader
+
+from common.exceptions.auth import TokenException, TokenExpiredException
 from schemas.auth import AuthData, RefreshData
 from schemas.request.token import RefreshSchema
 from services import AuthServiceABC

@@ -1,11 +1,12 @@
 import logging
 
+from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi.responses import Response
+
 from common.enums import RateLimitPeriodEnum
 from common.exceptions import AuthException, UserAlreadyExists, UserException
 from dependencies.auth import get_auth_data, get_refresh_data
 from dependencies.common import get_rate_limit
-from fastapi import APIRouter, Depends, Header, HTTPException, status
-from fastapi.responses import Response
 from models.history import ActionType
 from schemas.auth import AuthData, RefreshData
 from schemas.request.user import (

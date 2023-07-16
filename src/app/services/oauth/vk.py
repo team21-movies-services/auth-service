@@ -1,6 +1,8 @@
 import logging
 from abc import ABC, abstractmethod
 
+from pydantic import ValidationError
+
 from common.exceptions.base import OAuthRequestError
 from core.oauth_config import VKOAuthConfig
 from domain.oauth.dto import OAuthUserInfoDto
@@ -9,7 +11,6 @@ from domain.oauth.vk.response import (
     VKOAuthResponseTokenSchema,
     VKOAuthResponseUserInfoSchema,
 )
-from pydantic import ValidationError
 from services.oauth.enums import VKOAuthEndpointEnum
 from utils.common import append_query_params_to_url
 from wrappers.cache.base import CacheServiceABC

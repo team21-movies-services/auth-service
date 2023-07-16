@@ -1,9 +1,10 @@
 import logging
 
+from sqlalchemy.exc import IntegrityError
+
 from common.exceptions.social_account import SocialAccountAlreadyExists
 from models.social_account import SocialAccount
 from repositories.base import SQLAlchemyRepository
-from sqlalchemy.exc import IntegrityError
 
 logger = logging.getLogger(__name__)
 

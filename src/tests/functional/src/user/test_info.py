@@ -5,6 +5,7 @@ from typing import List
 import pytest
 from functional.testdata.users import fake_user_info
 from httpx import AsyncClient
+
 from models import AuthRole
 from models.history import AuthHistory
 

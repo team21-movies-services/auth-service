@@ -1,4 +1,5 @@
 from pydantic.main import BaseModel
+
 from schemas.request.common import PaginationRequestType
 
 

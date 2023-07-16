@@ -1,9 +1,10 @@
-from core.config import Settings
-from dependencies.common import get_httpx_client, get_redis_client, get_settings
-from dependencies.registrator import add_factory_to_mapper
 from fastapi import Depends
 from httpx import AsyncClient
 from redis.asyncio import Redis
+
+from core.config import Settings
+from dependencies.common import get_httpx_client, get_redis_client, get_settings
+from dependencies.registrator import add_factory_to_mapper
 from services import oauth
 from wrappers import AsyncHTTPClient, RedisCacheService
 

@@ -1,8 +1,9 @@
 from typing import Awaitable, Callable
 
-from common.exceptions.base import OAuthRequestError, TooManyRequests
 from fastapi import Request, Response, status
 from starlette.responses import JSONResponse
+
+from common.exceptions.base import OAuthRequestError, TooManyRequests
 
 
 async def error_middleware(

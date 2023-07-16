@@ -1,13 +1,14 @@
 from logging import config as logging_config
 
 import uvicorn
+from fastapi import FastAPI, status
+from fastapi.responses import ORJSONResponse
+
 from api.routers.main import setup_routers
 from common.exceptions.auth import OAuthException
 from core.config import Settings
 from core.logger import LOGGING
 from dependencies.main import setup_dependencies
-from fastapi import FastAPI, status
-from fastapi.responses import ORJSONResponse
 from middleware.main import setup_middleware
 from providers.main import setup_providers
 from telemetry.main import setup_telemetry

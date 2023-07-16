@@ -4,8 +4,9 @@ from datetime import datetime, timedelta
 from typing import Optional
 from uuid import UUID
 
-import common.exceptions.auth as auth_exceptions
 import jwt
+
+import common.exceptions.auth as auth_exceptions
 from common.constants import EXPIRE_ACCESS_TOKEN, EXPIRE_REFRESH_TOKEN
 from schemas.auth import AuthData, RefreshData
 from schemas.response.token import TokensResponse

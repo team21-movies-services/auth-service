@@ -1,12 +1,13 @@
 import enum
 import uuid
 
-from models import AuthDevice
-from models.base import BaseModel, Column
-from models.mixins import IdMixin, TsMixinCreated
 from sqlalchemy import ForeignKeyConstraint, PrimaryKeyConstraint
 from sqlalchemy.dialects.postgresql import ENUM, UUID
 from sqlalchemy.orm import Mapped, relationship
+
+from models import AuthDevice
+from models.base import BaseModel, Column
+from models.mixins import IdMixin, TsMixinCreated
 
 
 @enum.unique

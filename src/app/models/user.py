@@ -1,11 +1,19 @@
 import uuid
 from typing import TYPE_CHECKING
 
-from models.base import BaseModel, Column
-from models.mixins import IdMixin, TsMixinCreated, TsMixinUpdated
-from sqlalchemy import Boolean, ForeignKeyConstraint, Index, PrimaryKeyConstraint, String, UniqueConstraint
+from sqlalchemy import (
+    Boolean,
+    ForeignKeyConstraint,
+    Index,
+    PrimaryKeyConstraint,
+    String,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, relationship
+
+from models.base import BaseModel, Column
+from models.mixins import IdMixin, TsMixinCreated, TsMixinUpdated
 
 if TYPE_CHECKING:
     from models import SocialAccount

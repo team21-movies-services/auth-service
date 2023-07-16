@@ -1,11 +1,12 @@
 import logging
 
 from fastapi import FastAPI
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.cors import CORSMiddleware
+
 from middleware.error import error_middleware
 from middleware.request_id import RequestIdHeaderMiddleware
 from middleware.trace import TracerRequestIdMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.middleware.cors import CORSMiddleware
 
 logger = logging.getLogger(__name__)
 

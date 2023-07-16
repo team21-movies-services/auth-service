@@ -1,6 +1,7 @@
 from typing import Union
 
 from redis.asyncio import Redis
+
 from wrappers.cache.base import CacheServiceABC
 
 

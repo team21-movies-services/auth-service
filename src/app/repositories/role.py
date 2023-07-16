@@ -2,11 +2,12 @@ import logging
 import uuid
 from typing import List
 
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.sql import delete, select
+
 from common.exceptions.role import RoleAlreadyExists
 from models import AuthRole, AuthUser, AuthUserRole
 from repositories.base import SQLAlchemyRepository
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.sql import delete, select
 
 logger = logging.getLogger(__name__)
 

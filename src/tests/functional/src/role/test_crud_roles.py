@@ -5,6 +5,7 @@ from typing import List
 import pytest
 from functional.testdata.roles import fake_role
 from httpx import AsyncClient
+
 from models import AuthRole
 
 pytestmark = pytest.mark.asyncio

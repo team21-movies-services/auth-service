@@ -1,7 +1,8 @@
 import logging
 
-from core.config import Settings
 from fastapi import FastAPI
+
+from core.config import Settings
 from providers.cache_providers import RedisProvider
 from providers.http_providers import HTTPXClientProvider
 from providers.pg_providers import SQLAlchemyProvider

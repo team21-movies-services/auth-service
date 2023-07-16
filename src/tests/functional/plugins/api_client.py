@@ -1,12 +1,13 @@
 import pytest_asyncio
-from dependencies.common import get_redis_client, get_session
 from functional.settings import get_settings
 from httpx import AsyncClient
-from main import app
-from models.base import BaseModel, metadata
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.sql import text as sa_text
+
+from dependencies.common import get_redis_client, get_session
+from main import app
+from models.base import BaseModel, metadata
 
 settings = get_settings()
 

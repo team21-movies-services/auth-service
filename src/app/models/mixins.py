@@ -1,10 +1,11 @@
 import uuid
 from datetime import datetime
 
-from models.base import Column
 from sqlalchemy import TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped
+
+from models.base import Column
 
 
 class IdMixin:

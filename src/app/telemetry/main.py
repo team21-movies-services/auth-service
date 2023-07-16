@@ -1,11 +1,12 @@
 import logging
 
-from core.config import Settings, settings
 from fastapi import FastAPI
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.trace import Tracer, get_tracer, set_tracer_provider
+
+from core.config import Settings, settings
 from telemetry.console import setup_console
 from telemetry.jaeger import setup_jaeger
 

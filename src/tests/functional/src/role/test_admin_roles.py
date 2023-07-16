@@ -4,6 +4,7 @@ from typing import List
 
 import pytest
 from httpx import AsyncClient
+
 from models import AuthRole, AuthUser
 from repositories import RoleRepository
 

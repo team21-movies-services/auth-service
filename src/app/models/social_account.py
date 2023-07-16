@@ -1,11 +1,12 @@
 import uuid
 from typing import TYPE_CHECKING
 
-from models.base import BaseModel, mapped_column
-from models.mixins import IdMixin, TsMixinCreated
 from sqlalchemy import ForeignKeyConstraint, Index, PrimaryKeyConstraint, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, relationship
+
+from models.base import BaseModel, mapped_column
+from models.mixins import IdMixin, TsMixinCreated
 
 if TYPE_CHECKING:
     from models import AuthUser

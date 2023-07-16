@@ -2,9 +2,10 @@ import logging
 import uuid
 from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException, status
+
 from common.exceptions.role import RoleException
 from dependencies.auth import get_auth_admin
-from fastapi import APIRouter, Depends, HTTPException, status
 from services.role import RoleServiceABC
 
 router = APIRouter(prefix='/users', tags=['Действия с ролями'])

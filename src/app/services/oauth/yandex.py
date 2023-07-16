@@ -2,6 +2,8 @@ import logging
 from abc import ABC, abstractmethod
 from uuid import UUID
 
+from pydantic import ValidationError
+
 from common.exceptions.auth import OAuthTokenExpiredException
 from common.exceptions.base import OAuthRequestError
 from core.oauth_config import YandexOAuthConfig
@@ -19,7 +21,6 @@ from domain.oauth.yandex.response import (
     OAuthResponseTokenSchema,
     OAuthUserInfoSchema,
 )
-from pydantic import ValidationError
 from services.oauth.enums import YandexOAuthEndpointEnum
 from utils.common import append_query_params_to_url
 from wrappers.cache.base import CacheServiceABC

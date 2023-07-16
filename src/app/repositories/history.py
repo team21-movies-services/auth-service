@@ -2,10 +2,11 @@ import logging
 import uuid
 from typing import Sequence
 
-from models.history import ActionType, AuthHistory
-from repositories.base import SQLAlchemyRepository
 from sqlalchemy.orm import selectinload
 from sqlalchemy.sql import select
+
+from models.history import ActionType, AuthHistory
+from repositories.base import SQLAlchemyRepository
 
 logger = logging.getLogger(__name__)
 

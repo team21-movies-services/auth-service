@@ -2,6 +2,7 @@ from random import SystemRandom
 from typing import List
 
 import pytest_asyncio
+
 from models import AuthUser
 from models.history import ActionType, AuthHistory
 from repositories import DeviceRepository, HistoryRepository

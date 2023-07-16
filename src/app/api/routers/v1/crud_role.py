@@ -2,10 +2,11 @@ import logging
 import uuid
 from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException, status
+
 from common.exceptions.base import ObjectDoesNotExist
 from common.exceptions.role import RoleException
 from dependencies.auth import get_auth_admin
-from fastapi import APIRouter, Depends, HTTPException, status
 from schemas.request.role import RoleRequest
 from schemas.response.role import RoleResponse
 from services.role import RoleServiceABC
