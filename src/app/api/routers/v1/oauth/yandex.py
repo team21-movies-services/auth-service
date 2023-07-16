@@ -12,7 +12,7 @@ from services import AuthServiceABC, SocialAccountServiceABC, UserServiceABC
 from services.device import DeviceService
 from services.oauth.yandex import YandexOAuthServiceABC
 
-router = APIRouter(prefix="/yandex", tags=["Авторизация через сторонние сервисы"])
+router = APIRouter(prefix="/yandex", tags=["Авторизация через YANDEX"])
 
 logger = logging.getLogger().getChild("oauth-actions")
 
