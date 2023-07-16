@@ -23,3 +23,4 @@ jobs:
       run: |
         docker build . --tag ghcr.io/team21-movies-services/auth-service:latest
         docker push ghcr.io/team21-movies-services/auth-service:latest
+
