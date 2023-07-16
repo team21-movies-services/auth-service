@@ -20,4 +20,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: 'Build Inventory Image'
-      run: ls
+      run: |
+        docker build . --file ./docker/backend/Dockerfile --tag ghcr.io/team21-movies-services/auth-service:latest
+        docker push ghcr.io/team21-movies-services/auth-service:latest
+
