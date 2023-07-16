@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.10-slim
 
 # Основной путь приложения
 ENV SRC_DIR=/opt
@@ -8,11 +8,11 @@ ENV APP_DIR=$SRC_DIR/app
 
 ENV APP_USER=backend-user
 
-ENV PYTHONDONTWRITEBYTECODE 1 \
-    PYTHONUNBUFFERED 1 \
-    GUNICORN_PROCESSES 4 \
-    GUNICORN_CONNECTIONS 8 \
-    GUNICORN_LOGLEVEL 'error'
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    GUNICORN_PROCESSES=4 \
+    GUNICORN_CONNECTIONS=8 \
+    GUNICORN_LOGLEVEL='error'
 
 # Создание no-root пользователя
 RUN groupadd -r $APP_USER && \
