@@ -20,15 +20,16 @@ def _setup_tracer(settings: Settings) -> TracerProvider:
 
 
 def setup_telemetry(app: FastAPI, settings: Settings):
-    tracer = _setup_tracer(settings)
-    logger.info(f"Init main Tracer Provider - service name: {settings.project.name}")
+    if settings.tracer.enable_trace:
+        tracer = _setup_tracer(settings)
+        logger.info(f"Init main Tracer Provider - service name: {settings.project.name}")
 
-    setup_jaeger(tracer, settings)
-    logger.info(f"Setup Jaeger Tracer - host:port: {settings.tracer.jaeger_host}:{settings.tracer.jaeger_port}")
+        setup_jaeger(tracer, settings)
+        logger.info(f"Setup Jaeger Tracer - host:port: {settings.tracer.jaeger_host}:{settings.tracer.jaeger_port}")
 
-    if settings.tracer.debug_trace:
-        setup_console(tracer)
-        logger.info("Setup Console Tracer")
+        if settings.tracer.debug_trace:
+            setup_console(tracer)
+            logger.info("Setup Console Tracer")
 
     FastAPIInstrumentor.instrument_app(app)
 

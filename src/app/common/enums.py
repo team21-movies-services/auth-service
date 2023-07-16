@@ -10,3 +10,9 @@ class RateLimitPeriodEnum(str, Enum):
     @classmethod
     def _missing_(cls, value):
         return cls.hours
+
+
+class SocialNameEnum(str, Enum):
+    GOOGLE = "google"
+    VK = "vk"
+    YANDEX = "yandex"

@@ -15,6 +15,7 @@ class TraceConfig(BaseSettings):
     jaeger_port: int = Field(default=6831, env='JAEGER_UDP_PORT')
     jaeger_host: str = Field(default='127.0.0.1', env='JAEGER_HOST')
     debug_trace: bool = Field(default=False, env='DEBUG_TRACE')
+    enable_trace: bool = Field(default=True, env='ENABLE_TRACE')
 
 
 # Настройки Postgres

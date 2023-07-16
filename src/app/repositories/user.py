@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 logger = logging.getLogger(__name__)
 
 
-class UserRepository(SQLAlchemyRepository):
+class UserRepository(SQLAlchemyRepository[AuthUser]):
     model = AuthUser
 
     async def get_user_by_field(self, raise_if_notfound: bool = True, **fields) -> Optional[AuthUser]:
@@ -30,7 +30,10 @@ class UserRepository(SQLAlchemyRepository):
 
     async def create_user(self, **fields) -> AuthUser:
         """Создание пользователя в БД postgres."""
-        db_user = self.model(**fields)
+        db_user = self.model()
+        for field, value in fields.items():
+            if hasattr(db_user, field):
+                setattr(db_user, field, value)
         self.session.add(db_user)
 
         try:
