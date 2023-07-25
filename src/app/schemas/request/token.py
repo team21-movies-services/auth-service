@@ -7,3 +7,7 @@ class RefreshSchema(BaseModel):
     # grant_type: str
     # client_id: int
     # client_secret
+
+
+class AccessSchema(BaseModel):
+    access_token: str

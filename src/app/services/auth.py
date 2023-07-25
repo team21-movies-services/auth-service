@@ -139,6 +139,10 @@ class AuthService(AuthServiceABC):
         user_id = payload.get('user_id')
         is_superuser = payload.get('is_superuser', False)
 
+        if not user_id:
+            logger.error(f"Can't get user_id from refresh token! {refresh_token}")
+            raise auth_exceptions.TokenDecodeException()
+
         # Проверим одноразовость токена
         if not await self.cache_client.get_from_cache(refresh_token):
             logger.error(f"Can't get token from cache! {refresh_token}")

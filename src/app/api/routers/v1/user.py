@@ -9,6 +9,7 @@ from dependencies.auth import get_auth_data, get_refresh_data
 from dependencies.common import get_rate_limit
 from models.history import ActionType
 from schemas.auth import AuthData, RefreshData
+from schemas.request.token import AccessSchema
 from schemas.request.user import (
     UserChangePasswordSchema,
     UserLoginSchema,
@@ -160,3 +161,12 @@ async def _logout(
 ):
     logger.info(f"Logout: user_id - {refresh_data.user_id}")
     await auth_service.remove_refresh_token_from_cache(refresh_data.refresh_token)
+
+
+@router.post(
+    "/validate/token",
+    summary="Валидация access токена",
+    response_model=AuthData,
+)
+async def _validate_token(token_info: AccessSchema, auth_service: AuthServiceABC = Depends()) -> AuthData:
+    return await auth_service.validate_access_token(token_info.access_token)
