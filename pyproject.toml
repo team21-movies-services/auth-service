@@ -15,7 +15,7 @@ profile = "black"
 src_paths = ["src/app"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.10 || ^3.11"
 fastapi = "0.95.1"
 uvicorn = "^0.22.0"
 passlib = "^1.7.4"
@@ -37,6 +37,7 @@ opentelemetry-instrumentation-sqlalchemy = "0.38b0"
 opentelemetry-instrumentation-redis = "0.38b0"
 cryptography = "^41.0.2"
 python-dotenv = "^1.0.0"
+flake8-html = "^0.4.3"
 
 
 [tool.poetry.group.dev.dependencies]
