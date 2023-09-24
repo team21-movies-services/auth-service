@@ -4,14 +4,14 @@ from abc import ABC, abstractmethod
 
 from repositories import SocialAccountRepository, UserRepository
 from schemas.response.social_account import SocialAccountResponse
-from schemas.response.user import UserResponse
+from schemas.response.user import UserWithRolesResponse
 
 logger = logging.getLogger(__name__)
 
 
 class SocialAccountServiceABC(ABC):
     @abstractmethod
-    async def get_user_by_social_account(self, social_name: str, user_social_id: str) -> UserResponse | None:
+    async def get_user_by_social_account(self, social_name: str, user_social_id: str) -> UserWithRolesResponse | None:
         raise NotImplementedError
 
     @abstractmethod
@@ -24,11 +24,11 @@ class SocialAccountService(SocialAccountServiceABC):
         self._social_account_repository = social_account_repository
         self._user_repository = user_repository
 
-    async def get_user_by_social_account(self, social_name: str, user_social_id: str) -> UserResponse | None:
+    async def get_user_by_social_account(self, social_name: str, user_social_id: str) -> UserWithRolesResponse | None:
         social_db = await self._social_account_repository.get_by(social_name=social_name, user_social_id=user_social_id)
         if social_db:
-            user_db = await self._user_repository.get_by(id=social_db.user_id)
-            return UserResponse.from_orm(user_db)
+            user_db = await self._user_repository.get_user_by_field_with_roles(id=social_db.user_id)
+            return UserWithRolesResponse.from_orm(user_db)
         return None
 
     async def create_social(self, social_name: str, user_social_id: str, user_id: uuid.UUID) -> SocialAccountResponse:

@@ -1,5 +1,5 @@
 import uuid
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from sqlalchemy import (
     Boolean,
@@ -16,7 +16,7 @@ from models.base import BaseModel, Column
 from models.mixins import IdMixin, TsMixinCreated, TsMixinUpdated
 
 if TYPE_CHECKING:
-    from models import SocialAccount
+    from models import AuthRole, SocialAccount
 
 
 class AuthUser(BaseModel, IdMixin, TsMixinCreated, TsMixinUpdated):
@@ -38,7 +38,7 @@ class AuthUser(BaseModel, IdMixin, TsMixinCreated, TsMixinUpdated):
     is_superuser: Mapped[bool] = Column(Boolean, default=False, nullable=False)
     is_active: Mapped[bool] = Column(Boolean, default=True, nullable=False)
 
-    roles = relationship(
+    roles: Mapped[List["AuthRole"]] = relationship(
         'AuthRole',
         secondary='auth.user_role',
     )

@@ -13,11 +13,13 @@ async def auth_service(settings: Settings, redis_client):
 
 @pytest_asyncio.fixture()
 async def auth_tokens(auth_user: AuthUser, auth_service: AuthService, flushall_redis_data):
-    tokens = await auth_service.create_token_pair(auth_user.id, is_superuser=auth_user.is_superuser)
+    tokens = await auth_service.create_token_pair(auth_user.id, is_superuser=auth_user.is_superuser, roles=[])
     return tokens.dict()
 
 
 @pytest_asyncio.fixture()
 async def admin_auth_token(auth_admin_user, auth_service: AuthService, flushall_redis_data):
-    tokens = await auth_service.create_token_pair(auth_admin_user.id, is_superuser=auth_admin_user.is_superuser)
+    tokens = await auth_service.create_token_pair(
+        auth_admin_user.id, is_superuser=auth_admin_user.is_superuser, roles=[]
+    )
     return tokens.dict()

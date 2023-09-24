@@ -75,6 +75,7 @@ async def _login(
         tokens: TokensResponse = await auth_service.create_token_pair(
             user_id=user_response.id,
             is_superuser=user_response.is_superuser,
+            roles=[role.name for role in user_response.roles],
         )
     except AuthException:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -104,6 +105,7 @@ async def _refresh_token(
         token_response: TokensResponse = await auth_service.create_token_pair(
             user_id=refresh_data.user_id,
             is_superuser=refresh_data.is_superuser,
+            roles=refresh_data.roles,
         )
     except AuthException:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

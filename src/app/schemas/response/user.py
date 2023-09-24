@@ -4,6 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from schemas.response.role import RoleResponse
 from schemas.response.token import TokensResponse
 
 
@@ -21,3 +22,7 @@ class UserResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UserWithRolesResponse(UserResponse):
+    roles: list[RoleResponse]
