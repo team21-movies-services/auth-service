@@ -53,7 +53,10 @@ async def _google_callback(
     if not user_response:
         user_response = await user_service.get_or_create_user_from_oauth(user_info)
         await social_account.create_social(SocialNameEnum.GOOGLE.value, user_info.social_id, user_response.id)
-    user_response.tokens = await auth_service.create_token_pair(user_response.id)
+    user_response.tokens = await auth_service.create_token_pair(
+        user_response.id,
+        roles=[role.name for role in user_response.roles],
+    )
     await google_oauth.add_access_token_to_cache(user_response.id, access_info.access_token, access_info.expires_in)
     await google_oauth.add_refresh_token_to_cache(user_response.id, access_info.refresh_token, access_info.expires_in)
     return user_response

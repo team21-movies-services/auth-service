@@ -46,7 +46,10 @@ async def _vk_callback(
     if not user_response:
         user_response = await user_service.get_or_create_user_from_oauth(user_info)
         await social_account.create_social(SocialNameEnum.VK.value, user_info.social_id, user_response.id)
-    user_response.tokens = await auth_service.create_token_pair(user_response.id)
+    user_response.tokens = await auth_service.create_token_pair(
+        user_response.id,
+        roles=[role.name for role in user_response.roles],
+    )
     # TODO: добавить добавление токена в cache
     # await vk_oauth.add_access_token_to_cache(user_response.id, vk_access_info.access_token, vk_access_info.expires_in)
     return user_response

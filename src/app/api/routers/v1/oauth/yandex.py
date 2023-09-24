@@ -65,7 +65,10 @@ async def _yandex_callback(
     if not user_response:
         user_response = await user_service.get_or_create_user_from_oauth(user_info)
         await social_account.create_social(SocialNameEnum.YANDEX.value, user_info.social_id, user_response.id)
-    user_response.tokens = await auth_service.create_token_pair(user_response.id)
+    user_response.tokens = await auth_service.create_token_pair(
+        user_response.id,
+        roles=[role.name for role in user_response.roles],
+    )
     cache_tokens_dto = CacheTokensDto(
         user_id=user_response.id,
         access_token=token_dto.access_token,

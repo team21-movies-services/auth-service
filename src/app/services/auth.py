@@ -17,15 +17,15 @@ logger = logging.getLogger(__name__)
 
 class AuthServiceABC(ABC):
     @abstractmethod
-    async def create_access_token(self, user_id: UUID, is_superuser: bool = False) -> str:
+    async def create_access_token(self, user_id: UUID, roles: list[str], is_superuser: bool = False) -> str:
         ...
 
     @abstractmethod
-    async def create_token_pair(self, user_id: UUID, is_superuser: bool = False) -> TokensResponse:
+    async def create_token_pair(self, user_id: UUID, roles: list[str], is_superuser: bool = False) -> TokensResponse:
         ...
 
     @abstractmethod
-    async def create_refresh_token(self, user_id: UUID, is_superuser: bool = False) -> str:
+    async def create_refresh_token(self, user_id: UUID, roles: list[str], is_superuser: bool = False) -> str:
         ...
 
     @abstractmethod
@@ -48,14 +48,15 @@ class AuthService(AuthServiceABC):
         self.jwt_secret_key = jwt_secret_key
         self.cache_client = cache_client
 
-    async def create_token_pair(self, user_id: UUID, is_superuser: bool = False) -> TokensResponse:
-        access_token = await self.create_access_token(user_id, is_superuser)
-        refresh_token = await self.create_refresh_token(user_id, is_superuser)
+    async def create_token_pair(self, user_id: UUID, roles: list[str], is_superuser: bool = False) -> TokensResponse:
+        access_token = await self.create_access_token(user_id, roles, is_superuser)
+        refresh_token = await self.create_refresh_token(user_id, roles, is_superuser)
         return TokensResponse(access_token=access_token, refresh_token=refresh_token)
 
     def _create_token(
         self,
         expire_timestamp: int,
+        roles: list[str],
         user_id: Optional[UUID] = None,
         is_superuser: Optional[bool] = None,
     ) -> str:
@@ -63,6 +64,7 @@ class AuthService(AuthServiceABC):
             'sub': 'authentication',
             'exp': expire_timestamp,
             'iat': int(datetime.utcnow().timestamp()),
+            'roles': roles,
         }
         if user_id is not None:
             payload['user_id'] = str(user_id)
@@ -96,7 +98,7 @@ class AuthService(AuthServiceABC):
 
         return payload
 
-    async def create_refresh_token(self, user_id: UUID, is_superuser: bool = False) -> str:
+    async def create_refresh_token(self, user_id: UUID, roles: list[str], is_superuser: bool = False) -> str:
         """Генерация refresh токена и запись в кеш."""
 
         refresh_expire = (datetime.now() + timedelta(seconds=EXPIRE_REFRESH_TOKEN)).timestamp()
@@ -104,13 +106,14 @@ class AuthService(AuthServiceABC):
             expire_timestamp=int(refresh_expire),
             user_id=user_id,
             is_superuser=is_superuser,
+            roles=roles,
         )
 
         await self.cache_client.put_to_cache(key=refresh_token, value=str(user_id), expire=EXPIRE_REFRESH_TOKEN)
 
         return refresh_token
 
-    async def create_access_token(self, user_id: UUID, is_superuser: bool = False) -> str:
+    async def create_access_token(self, user_id: UUID, roles: list[str], is_superuser: bool = False) -> str:
         """Генерация access токена."""
 
         access_expire = (datetime.now() + timedelta(seconds=EXPIRE_ACCESS_TOKEN)).timestamp()
@@ -118,6 +121,7 @@ class AuthService(AuthServiceABC):
             expire_timestamp=int(access_expire),
             user_id=user_id,
             is_superuser=is_superuser,
+            roles=roles,
         )
 
         return access_token
@@ -127,17 +131,19 @@ class AuthService(AuthServiceABC):
         payload = self._validate_token(access_token)
         user_id = payload.get('user_id')
         is_superuser = payload.get('is_superuser', False)
+        roles = payload.get('roles', [])
         if not user_id:
             logger.error(f"Can't get user_id from access token! {access_token}")
             raise auth_exceptions.TokenDecodeException()
 
-        return AuthData(user_id=UUID(user_id), is_superuser=is_superuser)
+        return AuthData(user_id=UUID(user_id), is_superuser=is_superuser, roles=roles)
 
     async def validate_refresh_token(self, refresh_token: str) -> RefreshData:
         """Валидация refresh токена."""
         payload = self._validate_token(refresh_token)
         user_id = payload.get('user_id')
         is_superuser = payload.get('is_superuser', False)
+        roles = payload.get('roles', [])
 
         if not user_id:
             logger.error(f"Can't get user_id from refresh token! {refresh_token}")
@@ -152,6 +158,7 @@ class AuthService(AuthServiceABC):
             user_id=user_id,
             is_superuser=is_superuser,
             refresh_token=refresh_token,
+            roles=roles,
         )
 
     async def remove_refresh_token_from_cache(self, refresh_token: str) -> None:
